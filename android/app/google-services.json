@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "863517810911",
+    "project_id": "bloc-verte",
+    "storage_bucket": "bloc-verte.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:863517810911:android:e10933d2e281f99ae0496a",
+        "android_client_info": {
+          "package_name": "com.example.bv"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMEv_jjQVQzgX7ceN7ZFYGUQFBVMrUOGQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
