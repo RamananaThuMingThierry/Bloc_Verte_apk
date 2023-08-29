@@ -48,34 +48,28 @@ class _ProfileState extends State<Profile> {
     roles = widget.userM.roles;
   }
 
-
   final _keys = GlobalKey<FormState>();
   RegExp regExp = RegExp(r'''
 (([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$''');
   GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
+    var heigth = MediaQuery.of(context).size.height;
 
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,
       key: _key,
       appBar: AppBar(
+        elevation: 0,
         leading: edit == true
-            ? IconButton(
-          onPressed: (){
-            setState(() {
-              edit = !edit;
-            });
-          },
-          icon: Icon(Icons.close, color: Colors.red,),
-        )
+            ? Container()
             : IconButton(onPressed: (){Navigator.pop(context);}, icon: Icon(Icons.arrow_back)),
         actions: [
           edit == false
               ? IconButton(onPressed: (){print("Nofications");}, icon: Icon(Icons.notifications_none))
-              : IconButton(onPressed: () => modifierProfile(context),
-                icon: Icon(Icons.check, color: Colors.white,)),
+              : Container(),
         ],
         backgroundColor: Colors.green,
         title: Text("Profile"),
@@ -83,11 +77,6 @@ class _ProfileState extends State<Profile> {
       ),
       body: SingleChildScrollView(
         child: Card(
-          shape:  Border(
-            right: BorderSide(color: Colors.green, width: 2),
-            left: BorderSide(color: Colors.green, width: 2),
-           // left: BorderSide(color: Colors.green, width: 5),
-          ),
           elevation: 0,
           child: Container(
             width: double.infinity,
@@ -98,7 +87,7 @@ class _ProfileState extends State<Profile> {
                 Stack(
                   children: [
                     Container(
-                      height: 175,
+                      height: 150,
                       width: double.infinity,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -131,7 +120,7 @@ class _ProfileState extends State<Profile> {
                                         loading  = true;
                                         setState(() {
                                         });
-                                        String? urlImage = await DbServices().uploadImage(data ,path: "profil");
+                                        String? urlImage = await DbServices().uploadImage(data ,path: "profile");
                                         print(urlImage!);
                                         if(urlImage != null){
                                           UserM.current!.image = urlImage;
@@ -156,201 +145,246 @@ class _ProfileState extends State<Profile> {
                     ),
                   ],
                 ),
-                Container(
-                  height: 450,
-                  width: double.infinity,
-                  child: Column(
-                    children: [
-                      Container(
-                        height: 450,
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        child: edit == true
-                        ? Form(
+                Column(
+                  children: [
+                    edit == true
+                      ? Container(
+                        height: 530,
+                        child: Form(
                           key: _keys,
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              MyTextFieldForm(
-                                  edit: true,
-                                  value: "${pseudo}",
-                                  name: "Nom",
-                                  onChanged: () => (value){
+                              SizedBox(height: 25,),
+                              _TextTitre(name: "Pseudo"),
+                              TextFormField(
+                                keyboardType: TextInputType.text,
+                                  initialValue: "Pseudo",
+                                  onChanged:(value){
                                     setState(() {
                                       pseudo = value;
                                     });
                                   },
-                                  validator: () => (value){
+                                  validator:(value){
                                     if(value!.isEmpty){
                                       return "Veuillez entrer votre nom!";
                                     }
                                   },
-                                  iconData: Icons.account_box,
-                                  textInputType: TextInputType.name
+                                style: TextStyle(color: Colors.blueGrey),
+                                onFieldSubmitted: (arg){},
+                                decoration: InputDecoration(
+                                  hintText: "${pseudo}",
+                                  hintStyle: TextStyle(fontSize: 15, color: Colors.grey),
+                                  prefixIcon: Icon(Icons.account_box_rounded, color: Colors.blueGrey, size: 20,),
+                                ),
+                                textInputAction: TextInputAction.search,
+                                textAlignVertical: TextAlignVertical.center,
                                 ),
                               SizedBox(height: 5,),
-                              MyTextFieldForm(
-                                  edit: true,
-                                  value: "${email}",
-                                  name: "Email",
-                                  onChanged: () => (value){
+                              _TextTitre(name: "Email"),
+                              TextFormField(
+                                style: TextStyle(color: Colors.blueGrey),
+                                onFieldSubmitted: (arg){},
+                                decoration: InputDecoration(
+                                  hintText: "${email}",
+                                  hintStyle: TextStyle(fontSize: 15, color: Colors.grey),
+                                  prefixIcon: Icon(Icons.mail, color: Colors.blueGrey, size: 20,),
+                                ),
+                                textInputAction: TextInputAction.search,
+                                textAlignVertical: TextAlignVertical.center,
+                                onChanged:(value){
                                     setState(() {
                                       email = value;
                                     });
                                   },
-                                  validator: () => (value){
+                                  validator:(value){
                                     if(value!.isEmpty){
                                       return "Veuillez entrer votre contact!";
                                     }else if(!regExp.hasMatch(value!)){
                                       return "Email invalide!";
                                     }
                                   },
-                                  iconData: Icons.email,
-                                  textInputType: TextInputType.emailAddress),
-                              SizedBox(height: 5,),
-                              Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 0,),
-                                child: Card(
-                                  elevation: 0.2,
-                                  child: Container(
-                                    width: double.infinity,
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        DropdownButtonHideUnderline(
-                                          child: DropdownButton(
-                                            borderRadius: BorderRadius.circular(5),
-                                            hint: Text(" Genre                                                        "),
-                                            onChanged: (String? value){
-                                              setState(() {
-                                                genre = value;
-                                              });
-                                            },
-                                            value: genre,
-                                            items: [
-                                              DropdownMenuItem(value: "Homme", child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Icon(Icons.man,color: Colors.blueGrey,),
-                                                  Text("Homme", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey),),
-                                                ],)
-                                              ),
-                                              DropdownMenuItem(value: "Femme", child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Icon(Icons.woman,color: Colors.pinkAccent,),
-                                                  Text("Femme", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.pinkAccent),),
-                                                ],)
-                                              ),
-                                            ],
-                                          ),
+                                initialValue: email,
+                                keyboardType: TextInputType.emailAddress,
+                              ),
+                              _TextTitre(name: "Genre"),
+                              Card(
+                                elevation: 0,
+                                shape: Border(bottom: BorderSide(width: 1, color: Colors.grey)),
+                                child: Container(
+                                  width: double.infinity,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      DropdownButtonHideUnderline(
+                                        child: DropdownButton(
+                                          borderRadius: BorderRadius.circular(5),
+                                          hint: Text(" Genre                                                                ", style: TextStyle(color: Colors.blueGrey),),
+                                          onChanged: (String? value){
+                                            setState(() {
+                                              genre = value;
+                                            });
+                                          },
+                                          dropdownColor: Colors.white,
+                                          value: genre,
+                                          items: [
+                                            DropdownMenuItem(value: "Homme", child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Icon(Icons.man,color: Colors.blueGrey,size: 25,),
+                                                Text("     Homme", style: TextStyle(color: Colors.blueGrey),),
+                                              ],)
+                                            ),
+                                            DropdownMenuItem(value: "Femme", child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Icon(Icons.woman,color: Colors.pinkAccent,),
+                                                Text("     Femme", style: TextStyle(color: Colors.pinkAccent),),
+                                              ],)
+                                            ),
+                                          ],
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
-                                ),),
+                                ),
+                              ),
+                              _TextTitre(name: "Contact"),
+                              TextFormField(
+                                keyboardType: TextInputType.number,
+                                initialValue: "${contact ?? "Néant"}",
+                                style: TextStyle(color: Colors.blueGrey),
+                                onFieldSubmitted: (arg){},
+                                decoration: InputDecoration(
+                                  hintText: "${contact ?? "Néant"}",
+                                  hintStyle: TextStyle(fontSize: 15, color: Colors.grey),
+                                  prefixIcon: Icon(Icons.phone, color: Colors.blueGrey, size: 20,),
+                                ),
+                                textInputAction: TextInputAction.search,
+                                textAlignVertical: TextAlignVertical.center,
+                                onChanged:(value){
+                                  setState(() {
+                                    contact = value;
+                                  });
+                                },
+                                validator:(value){
+                                  if(value!.isEmpty){
+                                    return "Veuillez saisir votre contact";
+                                  }
+                                },
+                              ),
                               SizedBox(height: 5,),
-                              MyTextFieldForm(
-                                  edit: true,
-                                  value: "${adresse ?? "Néant"}",
-                                  name: "Adresse",
-                                  onChanged: () => (value){
+                              _TextTitre(name: "Adresse"),
+                              TextFormField(
+                                 initialValue: "${adresse ?? "Néant"}",
+                                  style: TextStyle(color: Colors.blueGrey),
+                                  onFieldSubmitted: (arg){},
+                                  decoration: InputDecoration(
+                                    hintText: "${adresse ?? "Néant"}",
+                                    hintStyle: TextStyle(fontSize: 15, color: Colors.grey),
+                                    prefixIcon: Icon(Icons.location_on_outlined, color: Colors.blueGrey, size: 20,),
+                                  ),
+                                  textInputAction: TextInputAction.search,
+                                  textAlignVertical: TextAlignVertical.center,
+                                  onChanged:(value){
                                     setState(() {
                                       adresse = value;
                                     });
                                   },
-                                  validator: () => (value){
+                                  validator:(value){
                                     if(value!.isEmpty){
                                       return "Veuillez entrer votre adresse";
                                     }
                                   },
-                                  iconData: Icons.location_on_outlined,
-                                  textInputType: TextInputType.text),
+                              ),
                               SizedBox(height: 5,),
-                              MyTextFieldForm(
-                                  edit: true,
-                                  value: "${contact}",
-                                  name: "Contact",
-                                  onChanged: () => (value){
-                                    setState(() {
-                                      contact = value;
-                                    });
-                                  },
-                                  validator: () => (value){
-                                    if(value!.isEmpty){
-                                      return "Veuillez entrer votre contact!";
-                                    }else if(int.parse(value) < 11){
-                                      return "Votre numéro doit être comporte par 10 chiffres!";
-                                    }
-                                  },
-                                  iconData: Icons.phone,
-                                  textInputType: TextInputType.phone),
-                              (roles == "Administrateurs") ? SizedBox(height: 5,): Container(),
-                              (roles == "Administrateurs") ? Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 0,),
-                                  child: Card(
-                                    elevation: 0.2,
-                                    child: Container(
-                                      width: double.infinity,
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          DropdownButtonHideUnderline(
-                                            child: DropdownButton(
-                                              borderRadius: BorderRadius.circular(5),
-                                              hint: Text(" Roles                                                        "),
-                                              onChanged: (String? value){
-                                                setState(() {
-                                                  roles = value;
-                                                });
-                                              },
-                                              value: roles,
-                                              items: [
-                                                DropdownMenuItem(value: "Administrateurs", child: Row(
-                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                  children: [
-                                                    Icon(Icons.key,color: Colors.blueGrey,),
-                                                    Text("    Administrateurs", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey),),
-                                                  ],)
-                                                ),
-                                                DropdownMenuItem(value: "Utilisateurs", child: Row(
-                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                  children: [
-                                                    Icon(Icons.key_off,color: Colors.blueGrey,),
-                                                    Text("    Utilisateurs", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey),),
-                                                  ],)
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),) : Container()
+                              _TextTitre(name: "Rôles"),
+                              TextFormField(
+                                enabled: false,
+                                initialValue: "${roles}",
+                                style: TextStyle(color: Colors.blueGrey),
+                                onFieldSubmitted: (arg){},
+                                decoration: InputDecoration(
+                                  hintText: "${roles}",
+                                  hintStyle: TextStyle(fontSize: 15, color: Colors.grey),
+                                  prefixIcon: Icon( roles == "Administrateurs" ? Icons.key : Icons.key_off, color: Colors.blueGrey, size: 20,),
+                                ),
+                                textInputAction: TextInputAction.search,
+                                textAlignVertical: TextAlignVertical.center,
+                              ),
+                              SizedBox(height: 35,),
+                              Container(
+                                width: double.infinity,
+                                color: Colors.green,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      TextButton(onPressed: (){
+                                        setState(() {
+                                          edit = !edit;
+                                        });
+                                        print("Anuller");
+                                      },
+                                        child:  RichText(text: TextSpan(
+                                            children: [
+                                              WidgetSpan(child: Icon(Icons.arrow_back, color: Colors.white, size: 18,)),
+                                              TextSpan(text: "   Annuler", style: TextStyle(color: Colors.white)),
+                                            ]
+                                        ),
+                                        ),),
+
+                                      Text("|", style: style.copyWith(fontWeight: FontWeight.bold, color: Colors.white),),
+                                      TextButton(onPressed: (){
+                                        print("Modifier");
+                                      },
+                                        child:  RichText(text: TextSpan(
+                                            children: [
+                                              WidgetSpan(child: Icon(Icons.update, color: Colors.white, size: 18)),
+                                              TextSpan(text: "   Modifier", style: style.copyWith(fontWeight: FontWeight.bold, color: Colors.white)),
+                                            ]
+                                        ),
+                                        ),),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
-                        )
-                        :  Column(
-                          children: [
-                            SizedBox(height: 20,),
-                            _CardText(type: "Pseudo", value: "${pseudo}"),
-                            SizedBox(height: 5,),
-                            _CardText(type: "Email", value: "${email}"),
-                            SizedBox(height: 5,),
-                            _CardText(type: "Genre", value: "${genre ?? "Néant"}"),
-                            SizedBox(height: 5,),
-                            _CardText(type: "Adresse", value: "${adresse ?? "Néant"}"),
-                            SizedBox(height: 5,),
-                            _CardText(type: "Contact", value: "${contact ?? "Vide"}"),
-                            SizedBox(height: 5,),
-                            _CardText(type: "Rôles", value: "${roles ?? "Utilisateurs"}"),
-                          ],
-                        )
-                      ),
-                    ],
-                  ),
+                        ),
+                      )
+                      :  Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                        child: Container(
+                        height: 450,
+                          child: Column(
+                            children: [
+                              _TextTitre(name: "Pseudo"),
+                              _CardText(iconData: Icons.account_box_rounded, value: "${pseudo}"),
+                              SizedBox(height: 5,),
+                              _TextTitre(name: "Email"),
+                              _CardText(iconData: Icons.mail, value: "${email}"),
+                              SizedBox(height: 5,),
+                              _TextTitre(name: "Genre"),
+                              _CardText(iconData: Icons.person, value: "${genre ?? "Néant"}"),
+                              SizedBox(height: 5,),
+                              _TextTitre(name: "Contact"),
+                              _CardText(iconData: Icons.phone, value: "${contact}"),
+                              SizedBox(height: 5,),
+                              _TextTitre(name: "Adresse"),
+                              _CardText(iconData: Icons.local_library, value: "${adresse ?? "Néant"}"),
+                              SizedBox(height: 5,),
+                              _TextTitre(name: "Rôles"),
+                              _CardText(iconData: roles == "Administrateurs" ? Icons.key : Icons.key_off , value: "${roles}"),
+                              SizedBox(height: 5,),
+                            ],
+                          ),
+                        ),
+                      )
+                  ],
                 ),
                  Container(
-                   width: 325,
+                   width: 330,
                    child: edit == false
                        ? Button(
                       name: "Modifier",
@@ -369,40 +403,31 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-  Widget _TextField({String? name, String? value}){
-    return TextFormField(
-      initialValue: value,
-      decoration: InputDecoration(
-        hintText: "${name}",
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-        )
+  Padding _TextTitre({String? name}){
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 18),
+      child: Row(
+        children: [
+          Text("${name}", style: style.copyWith(color: Colors.green, fontWeight: FontWeight.bold),),
+        ],
       ),
     );
   }
 
-  Widget _CardText({String? type, String? value}){
-    return Card(
-      elevation: 0.4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
+  Widget _CardText({IconData? iconData, String? value}){
+    return TextFormField(
+      enabled: false,
+      style: TextStyle(color: Colors.blueGrey),
+      onFieldSubmitted: (arg){},
+      decoration: InputDecoration(
+        enabledBorder: InputBorder.none,
+        focusedBorder: InputBorder.none,
+        hintText: "${value}",
+        hintStyle: TextStyle(fontSize: 15, color: Colors.grey),
+        prefixIcon: Icon(iconData, color: Colors.blueGrey, size: 20,),
       ),
-      child: Container(
-        height: 55,
-        padding: EdgeInsets.symmetric(horizontal: 10),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        width: double.infinity,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text("${type}", style: TextStyle(color: Colors.grey)),
-            Text("${value}", style: TextStyle(color: Colors.blueGrey, fontWeight: FontWeight.bold),)
-          ],
-        ),
-      ),
+      textInputAction: TextInputAction.search,
+      textAlignVertical: TextAlignVertical.center,
     );
   }
 
