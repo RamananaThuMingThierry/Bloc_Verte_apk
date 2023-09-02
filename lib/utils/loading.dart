@@ -1,5 +1,6 @@
 import 'package:bv/utils/constant.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 loading(context) => showDialog(
     context: context,
@@ -49,17 +50,17 @@ showMessage(BuildContext context,{String? titre, String? message, VoidCallback? 
     context: context,
     builder: (ctx){
     return AlertDialog(
-      title: Text(titre!, style: TextStyle(color: Colors.brown),textAlign: TextAlign.center,),
-      content: Text(message!, style: TextStyle(color: Colors.grey,), textAlign: TextAlign.center,),
+      title: Text(titre!, style: GoogleFonts.roboto(color: Colors.red),textAlign: TextAlign.center,),
+      content: Text(message!, style: GoogleFonts.roboto(color: Colors.blueGrey,), textAlign: TextAlign.center,),
       actions: [
         TextButton(
           onPressed: ok,
-          child: Text("oui", style: TextStyle(color: Colors.lightBlue),)),
+          child: Text("OK", style: GoogleFonts.roboto(color: Colors.lightBlue),)),
         TextButton(
           onPressed: (){
             Navigator.pop(context);
           },
-          child: Text("non", style: TextStyle(color: Colors.redAccent),)),
+          child: Text("Annuler", style: GoogleFonts.roboto(color: Colors.red),)),
     ],
   );
 });
@@ -82,19 +83,29 @@ void Message(BuildContext context){
     });
 }
 
-showAlertDialog(BuildContext context, String? title, String? message){
+showAlertDialog(BuildContext context, String? type, String? message){
+
     var color;
     var iconData;
-    if(title == "Success"){
+    String? title;
+    if(type == "Success"){
       color = Colors.green;
+      title = "Confirmation";
       iconData = Icons.check;
-    }else if(title == "Warning"){
+    }else if(type == "Warning"){
       color = Colors.orangeAccent;
       iconData = Icons.warning;
-    }else{
+      title = "Avertissement";
+    }else if(type == "Info"){
       color = Colors.blue;
-      iconData = Icons.info_outlined;
+      iconData = Icons.info;
+      title = "Information";
+    }else if(type == "Danger"){
+      color = Colors.red;
+      title = "Erreur";
+      iconData = Icons.dangerous_outlined;
     }
+
   showDialog(
     context: context,
     builder: (BuildContext context){
@@ -107,9 +118,9 @@ showAlertDialog(BuildContext context, String? title, String? message){
             Text(title!,textAlign: TextAlign.center ,style: style.copyWith(color: color),),
           ],
         ),
-        content: Text(message!, style: TextStyle(color: Colors.blueGrey),),
+        content: Text(message!, style: TextStyle(color: Colors.blueGrey),textAlign: TextAlign.center,),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context) , child: Text("Ok", style: TextStyle(color: Colors.blue))),
+          TextButton(onPressed: () => Navigator.pop(context) , child: Text("Ferme", style: TextStyle(color: Colors.blue))),
         ],
       );
     }

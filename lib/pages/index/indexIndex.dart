@@ -1,5 +1,6 @@
 import 'package:bv/model/Index.dart';
 import 'package:bv/model/Mois.dart';
+import 'package:bv/model/User.dart';
 import 'package:bv/pages/index/ajouterIndex.dart';
 import 'package:bv/pages/index/modifierIndex.dart';
 import 'package:bv/services/db.dart';
@@ -8,11 +9,16 @@ import 'package:bv/utils/loading.dart';
 import 'package:bv/widgets/donnees_vide.dart';
 import 'package:bv/widgets/ligne_horizontale.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:provider/provider.dart';
 
 class IndexController extends StatefulWidget{
+ UserM? userM;
+ IndexController({required this.userM});
 
   @override
   State<StatefulWidget> createState() {
@@ -24,15 +30,52 @@ class IndexController extends StatefulWidget{
 class IndexState extends State<IndexController>{
 
   // Déclarations des variables
+  UserM? utilisateurs;
+  var connectionStatus;
+  String? roles;
+  late InternetConnectionChecker connectionChecker;
+
+  List<Indexs> _allIndex = [];
+  List<Indexs> _resultListIndex = [];
+
+  getIndexsStream() async{
+    var data = await FirebaseFirestore.instance.collection("index").get();
+    setState(() {
+      _allIndex = data.docs.map((e) {
+        return Indexs.fromJson(e.data() as Map<String, dynamic>);
+      }).toList();
+      _resultListIndex = List.from(_allIndex);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getIndexsStream();
+    utilisateurs = widget.userM;
+    roles = utilisateurs!.roles!;
+    connectionChecker = InternetConnectionChecker();
+    connectionChecker.onStatusChange.listen((status) {
+      setState(() {
+        connectionStatus = status.toString();
+      });
+      if (connectionStatus ==
+          InternetConnectionStatus.disconnected.toString()) {
+        Message(context);
+      }
+    });
+  }
+
+  // Déclarations des variables
   String? mois;
   List<Mois>? moisall;
   List<Indexs>? index;
 
   @override
   Widget build(BuildContext context) {
-    final List<Indexs> indexParPortes = Provider.of<List<Indexs>>(context);
+    getIndexsStream();
     return Scaffold(
-      backgroundColor: Colors.white70,
+      backgroundColor: _resultListIndex.length == 0 ? Colors.white :  Colors.grey[300],
       appBar: AppBar(
         title: Text("Index Facture"),
         backgroundColor: Colors.green,
@@ -44,7 +87,20 @@ class IndexState extends State<IndexController>{
               icon: Icon(Icons.add)),
         ],
       ),
-      body:StreamBuilder(
+      body: _resultListIndex.length == 0
+        ?
+      Center(child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text("Veuillez patientez...", style: GoogleFonts.roboto(fontSize: 18, color: Colors.green),),
+          SpinKitThreeBounce(
+            color: Colors.green,
+            size: 30,
+          ),
+        ],
+      ),)
+        :
+      StreamBuilder(
         stream: FirebaseFirestore.instance.collection('mois').snapshots(),
         builder: (context, AsyncSnapshot snapshot){
           if(snapshot.hasData){
@@ -75,10 +131,10 @@ class IndexState extends State<IndexController>{
                             height: 250,
                             child: ListView.builder(
                                 scrollDirection: Axis.horizontal,
-                                itemCount: indexParPortes.length,
+                                itemCount: _resultListIndex.length,
                                 itemBuilder: (context, j){
-                                  Indexs index = indexParPortes[j];
-                                  String? key = indexParPortes[j].id;
+                                  Indexs index = _resultListIndex[j];
+                                  String? key = _resultListIndex[j].id;
                                   double? ancien = double.parse(index.ancien_index!);
                                   double? news = double.parse(index.nouvel_index!);
                                   double? consommer = (news - ancien) as double?;
@@ -88,7 +144,11 @@ class IndexState extends State<IndexController>{
                                     width: 350,
                                     child: InkWell(
                                       onLongPress: (){
-                                        _modifierOuSupprimer(context, indexs: index);
+                                        roles == "Administrateurs"
+                                            ?
+                                        _modifierOuSupprimer(context, indexs: index)
+                                            :
+                                            showAlertDialog(context, "Info", "Vous n'êtes pas un administrateur! Vous n'avez pas eu accès!");
                                       },
                                       child: Card(
                                         color: Colors.white,
@@ -170,9 +230,9 @@ class IndexState extends State<IndexController>{
                                                     });
                                                     bool updateIndex = await DbServices().updateIndexs(index);
                                                     if(updateIndex == true){
-                                                      showAlertDialog(context, "Success", "Mofication avec succès!");
+                                                      showAlertDialog(context, "Success","Mofication avec succès!");
                                                     }else{
-                                                      showAlertDialog(context, "Warning", "Erreur de sauvegarde!");
+                                                      showAlertDialog(context, "Warning","Erreur de sauvegarde!");
                                                     }
                                                   },
                                                   activeColor: Colors.green,
@@ -207,9 +267,16 @@ class IndexState extends State<IndexController>{
                   );
                 });
           }
-          return Center(
-            child: CircularProgressIndicator(),
-          );
+          return Center(child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("Veuillez patientez...", style: GoogleFonts.roboto(fontSize: 18, color: Colors.green),),
+              SpinKitThreeBounce(
+                color: Colors.green,
+                size: 30,
+              ),
+            ],
+          ),);
         },
       ),
     );

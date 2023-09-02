@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
     ]);
 
     return MaterialApp(
-      title: 'Bloc Verte',
+      title: 'Trano Maitso',
       debugShowCheckedModeBanner: false,
       home: SplashScreen()
     );

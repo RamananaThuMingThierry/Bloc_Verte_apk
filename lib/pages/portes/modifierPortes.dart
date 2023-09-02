@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bv/model/Portes.dart';
 import 'package:bv/services/db.dart';
 import 'package:bv/utils/loading.dart';
+import 'package:bv/widgets/button.dart';
 import 'package:bv/widgets/myTextFieldForm.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,7 @@ class ModifierPortes extends StatefulWidget{
 class ModifierPortesState extends State<ModifierPortes>{
 
   Portes? data;
-  String? image = null;
+  String? image;
   String? nom;
   String? numero_porte;
   String? contact;
@@ -39,6 +40,7 @@ class ModifierPortesState extends State<ModifierPortes>{
     existe = widget.portes.image == null ? false : true;
     image_update = widget.portes.image;
     data = widget.portes;
+    image = image_update;
     super.initState();
   }
 
@@ -46,157 +48,159 @@ class ModifierPortesState extends State<ModifierPortes>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[300],
       appBar: AppBar(
         backgroundColor: Colors.green,
         centerTitle: true,
         title: Text("Modifier une Porte"),
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(10.0),
-        child: Form(
-          key: _key,
-          child: Column(
-            children: [
-              Card(
-                elevation: 2.0,
-                child: Container(
-                  height: 50.0,
-                  width: 340.0,
-                  padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 15),
-                  child: Text("Informations", textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey, fontSize: 18.0),),
-                ),
-              ),
-              Padding(padding: EdgeInsets.only(top: 2)),
-              Card(
-                elevation: 2.0,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    (existe == false)
-                        ?  Image.asset("assets/no_image.jpg")
-                        : (image_update != null)
-                            ? Container(
-                              child:  CachedNetworkImage(
-                                imageUrl: image_update!,
-                                placeholder: (context, url) => CircularProgressIndicator(), // Widget de chargement affiché pendant le chargement de l'image
-                                errorWidget: (context, url, error) => Icon(Icons.error), // Widget d'erreur affiché si l'image ne peut pas être chargée
-                                ),
-                              )
-                            : Image.file(File(image!)),
-                    Row(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: Form(
+              key: _key,
+              child: Column(
+                children: [
+                  Card(
+                    shape: Border(),
+                    elevation: 1.0,
+                    child: Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 15),
+                      child: Text("Informations", textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey, fontSize: 18.0),),
+                    ),
+                  ),
+                  Card(
+                    shape: Border(),
+                    elevation: 1.0,
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        IconButton(
-                            onPressed: () => getImage(ImageSource.camera),
-                            icon: Icon(Icons.camera_enhance, color: Colors.brown,)
+                        (existe == false)
+                            ?  Image.asset("assets/no_image.jpg")
+                            : (image_update != null)
+                                ? Container(
+                                  child:  CachedNetworkImage(
+                                    imageUrl: image_update!,
+                                    placeholder: (context, url) => CircularProgressIndicator(), // Widget de chargement affiché pendant le chargement de l'image
+                                    errorWidget: (context, url, error) => Icon(Icons.error), // Widget d'erreur affiché si l'image ne peut pas être chargée
+                                    ),
+                                  )
+                                : Image.file(File(image!)),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            IconButton(
+                                onPressed: () => getImage(ImageSource.camera),
+                                icon: Icon(Icons.camera_enhance, color: Colors.brown,)
+                            ),
+                            IconButton(
+                                onPressed: (){
+                                    // if(image_update != null){
+                                    //   setState(() {
+                                    //     image_update = null;
+                                    //   });
+                                    // }
+                                    if(existe == false){
+                                      setState(() {
+                                        existe = true;
+                                      });
+                                    }
+                                    getImage(ImageSource.gallery);
+                                  },
+                                icon: Icon(Icons.photo_library, color: Colors.greenAccent,)
+                            ),
+                          ],
                         ),
-                        IconButton(
-                            onPressed: (){
-                                if(image_update != null){
-                                  setState(() {
-                                    image_update = null;
-                                  });
-                                }
-                                if(existe == false){
-                                  setState(() {
-                                    existe = true;
-                                  });
-                                }
-                                getImage(ImageSource.gallery);
+                        Divider(
+                          color: Colors.grey,
+                          thickness: 1,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 5),
+                          child:MyTextFieldForm(
+                              edit: true,
+                              value: numero_porte! ?? "",
+                              name: "Numéro porte",
+                              onChanged: () => (value){
+                                setState(() {
+                                  numero_porte = value;
+                                });
                               },
-                            icon: Icon(Icons.photo_library, color: Colors.greenAccent,)
+                              validator: () => (value){
+                                if(value!.isEmpty){
+                                  return "Veuillez saisir le numéro du porte!";
+                                }else if(int.parse(value) < 1 || int.parse(value) > 11){
+                                  return "Le numéro du porte doit-être compris entre 1 et 11!";
+                                }
+                              },
+                              iconData: Icons.door_back_door_outlined,
+                              textInputType: TextInputType.number),
                         ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 5),
+                          child:MyTextFieldForm(
+                              edit: true,
+                              value: nom! ?? "",
+                              name: "Nom",
+                              onChanged: () => (value){
+                                setState(() {
+                                  nom = value;
+                                });
+                              },
+                              validator: () => (value){
+                                if(value!.isEmpty){
+                                  return "Veuillez saisir votre nom!";
+                                }
+                              },
+                              iconData: Icons.account_box,
+                              textInputType: TextInputType.name
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(right: 5.0, left: 5.0, bottom: 10.0),
+                          child:MyTextFieldForm(
+                              edit: true,
+                              value: contact! ?? "",
+                              name: "Contact",
+                              onChanged: () => (value){
+                                setState(() {
+                                  contact = value;
+                                });
+                              },
+                              validator: () => (value){
+                                if(value!.isEmpty){
+                                  return "Veuillez saisir votre contact!";
+                                }else if(int.parse(value) < 11){
+                                  return "Votre numéro doit être comporte par 10 chiffres!";
+                                }
+                              },
+                              iconData: Icons.phone_outlined,
+                              textInputType: TextInputType.number),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 5),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                width: 160,
+                                child: Button(onPressed: () => () => Navigator.pop(context), name: "Annuler", color: Colors.red),
+                              ),
+                              Container(
+                                width: 160,
+                                child: Button(onPressed: () => () => _modifier_porte(), name: "Valider", color: Colors.blue),
+                              ),
+                            ],
+                          ),
+                        )
                       ],
                     ),
-                    Divider(
-                      color: Colors.grey,
-                      thickness: 1,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(right: 5.0, left: 5.0),
-                      child:MyTextFieldForm(
-                          edit: true,
-                          value: numero_porte! ?? "",
-                          name: "Numéro porte",
-                          onChanged: () => (value){
-                            setState(() {
-                              numero_porte = value;
-                            });
-                          },
-                          validator: () => (value){
-                            if(value!.isEmpty){
-                              return "Veuillez saisir le numéro du porte!";
-                            }else if(int.parse(value) < 1 || int.parse(value) > 11){
-                              return "Le numéro du porte doit-être compris entre 1 et 11!";
-                            }
-                          },
-                          iconData: Icons.door_back_door_outlined,
-                          textInputType: TextInputType.number),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(right: 5.0, left: 5.0),
-                      child:MyTextFieldForm(
-                          edit: true,
-                          value: nom! ?? "",
-                          name: "Nom",
-                          onChanged: () => (value){
-                            setState(() {
-                              nom = value;
-                            });
-                          },
-                          validator: () => (value){
-                            if(value!.isEmpty){
-                              return "Veuillez saisir votre nom!";
-                            }
-                          },
-                          iconData: Icons.account_box,
-                          textInputType: TextInputType.name
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(right: 5.0, left: 5.0, bottom: 10.0),
-                      child:MyTextFieldForm(
-                          edit: true,
-                          value: contact! ?? "",
-                          name: "Contact",
-                          onChanged: () => (value){
-                            setState(() {
-                              contact = value;
-                            });
-                          },
-                          validator: () => (value){
-                            if(value!.isEmpty){
-                              return "Veuillez saisir votre contact!";
-                            }else if(int.parse(value) < 11){
-                              return "Votre numéro doit être comporte par 10 chiffres!";
-                            }
-                          },
-                          iconData: Icons.door_back_door_outlined,
-                          textInputType: TextInputType.number),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          MaterialButton(
-                              color: Colors.redAccent,
-                              onPressed: () => Navigator.pop(context),
-                              child: Text("Annuler", style: TextStyle(color: Colors.white),)
-                          ),
-                          Padding(padding: EdgeInsets.only(left: 10.0)),
-                          MaterialButton(
-                              color: Colors.blue,
-                              onPressed: () => _modifier_porte(),
-                              child: Text("Modifier", style: TextStyle(color: Colors.white),)
-                          )
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              )
-            ],
+                  )
+                ],
+              ),
+            ),
           ),
         ),
       ),
@@ -244,6 +248,7 @@ class ModifierPortesState extends State<ModifierPortes>{
   Future getImage(ImageSource source) async{
     final newImage = await ImagePicker().pickImage(source: source);
     setState(() {
+      image_update = null;
       image = newImage!.path;
       images = File(newImage!.path);
     });

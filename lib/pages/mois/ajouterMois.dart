@@ -27,6 +27,7 @@ class _AjouterMoisState extends State<AjouterMois> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[300],
       appBar: AppBar(
         backgroundColor: Colors.green,
         title: Text("Ajouter le mois"),
@@ -195,11 +196,11 @@ class _AjouterMoisState extends State<AjouterMois> {
       loading(context);
       if(_mois == null){
         Navigator.pop(context);
-        showAlertDialog(context, "Warning", "Veuillez séléctionner le mois!");
+        showAlertDialog(context, "Warning","Veuillez séléctionner le mois!");
       }else if(selectedDate == null){
         print(selectedDate);
         Navigator.pop(context);
-        showAlertDialog(context, "Warning", "Veuillez séléctionner la date!");
+        showAlertDialog(context, "Warning","Veuillez séléctionner la date!");
       }
       final identifiant = await DbServices().countMois();
       Mois mois = Mois();
@@ -213,9 +214,9 @@ class _AjouterMoisState extends State<AjouterMois> {
       if(saveMois == true){
         Navigator.pop(context);
         Navigator.pop(context);
-        showAlertDialog(context, "Success", "Sauvegarde avec succès!");
+        showAlertDialog(context, "Success","Sauvegarde avec succès!");
       }else{
-        showAlertDialog(context, "Warning", "Erreur de sauvegarde!");
+        showAlertDialog(context, "Warning","Erreur de sauvegarde!");
       }
     }else{
       print("Non");

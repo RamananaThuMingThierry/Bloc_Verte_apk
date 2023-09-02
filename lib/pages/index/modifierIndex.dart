@@ -37,6 +37,7 @@ class _ModifierIndexState extends State<ModifierIndex> {
         title: Text("Modifier un Index"),
         backgroundColor: Colors.green,
       ),
+      backgroundColor: Colors.grey[300],
       body: SingleChildScrollView(
         padding: EdgeInsets.all(2.0),
         child: Form(
@@ -44,7 +45,7 @@ class _ModifierIndexState extends State<ModifierIndex> {
           child: Column(
             children: [
               Card(
-                shape: Border(bottom: BorderSide(color: Colors.green, width: 3)),
+                shape: Border(),
                 elevation: 3.0,
                 child: Container(
                   height: 50.0,
@@ -55,6 +56,7 @@ class _ModifierIndexState extends State<ModifierIndex> {
               ),
               Padding(padding: EdgeInsets.only(top: 1)),
               Card(
+                shape: Border(),
                 elevation: 3.0,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -179,15 +181,21 @@ class _ModifierIndexState extends State<ModifierIndex> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Button(
-                              color: Colors.redAccent,
-                              onPressed: () => () => Navigator.pop(context),
-                              name: "Annuler"
+                          Container(
+                            width: 162,
+                            child: Button(
+                                color: Colors.redAccent,
+                                onPressed: () => () => Navigator.pop(context),
+                                name: "Annuler"
+                            ),
                           ),
-                          Button(
-                              color: Colors.blue,
-                              onPressed: () => () => _modifier_index(data),
-                              name : "Valider"
+                          Container(
+                            width: 162,
+                            child: Button(
+                                color: Colors.blue,
+                                onPressed: () => () => _modifier_index(data),
+                                name : "Valider"
+                            ),
                           ),
                         ],
                       ),
@@ -208,10 +216,10 @@ class _ModifierIndexState extends State<ModifierIndex> {
       loading(context);
       if(_mois == null){
         Navigator.pop(context);
-        showAlertDialog(context, "Warning", "Veuillez séléctionner le mois!");
+        showAlertDialog(context, "Warning","Veuillez séléctionner le mois!");
       }else if(_portes == null){
         Navigator.pop(context);
-        showAlertDialog(context, "Warning", "Veuillez séléctionner le numéro de porte!");
+        showAlertDialog(context, "Warning","Veuillez séléctionner le numéro de porte!");
       }
       data!.mois_id = _mois;
       data!.ancien_index = _depart;
@@ -221,9 +229,9 @@ class _ModifierIndexState extends State<ModifierIndex> {
       if(updateIndex == true){
         Navigator.pop(context);
         Navigator.pop(context);
-        showAlertDialog(context, "Success", "Mofication avec succès!");
+        showAlertDialog(context, "Success","Mofication avec succès!");
       }else{
-        showAlertDialog(context, "Warning", "Erreur de sauvegarde!");
+        showAlertDialog(context, "Warning","Erreur de sauvegarde!");
       }
     }else{
       print("Non");

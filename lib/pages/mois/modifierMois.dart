@@ -43,6 +43,7 @@ class _ModifierMoisState extends State<ModifierMois> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[300],
       appBar: AppBar(
         backgroundColor: Colors.green,
         title: Text("Modifier mois"),
@@ -51,13 +52,14 @@ class _ModifierMoisState extends State<ModifierMois> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(10.0),
+        padding: EdgeInsets.all(5.0),
         child: Form(
           key: _key,
           child: Column(
             children: [
               Card(
-                elevation: 2.0,
+                shape: Border(),
+                elevation: 1.0,
                 child: Container(
                   height: 50.0,
                   width: 340.0,
@@ -67,7 +69,8 @@ class _ModifierMoisState extends State<ModifierMois> {
               ),
               Padding(padding: EdgeInsets.only(top: 2)),
               Card(
-                elevation: 5.0,
+                shape: Border(),
+                elevation: 1.0,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -77,7 +80,7 @@ class _ModifierMoisState extends State<ModifierMois> {
                         value: _mois,
                         underline: SizedBox(height: 0,),
                         hint: Container(
-                          child: Text("Choisir le mois                                      "),
+                          child: Text("Choisir le mois                                                "),
                         ),
                         icon: Container(
                           child: Icon(
@@ -178,20 +181,26 @@ class _ModifierMoisState extends State<ModifierMois> {
                       padding: EdgeInsets.only(right: 5.0, left: 5.0),
                       child: Ligne(color: Colors.grey,),
                     ),
-                    Container(
-                      margin: EdgeInsets.symmetric(horizontal: 10),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Button(
-                              onPressed: () => () => Navigator.pop(context),
-                              name: "Annuler",
-                              color: Colors.red
+                          Container(
+                            width: 165,
+                            child: Button(
+                                onPressed: () => () => Navigator.pop(context),
+                                name: "Annuler",
+                                color: Colors.red
+                            ),
                           ),
-                          Button(
-                              onPressed: () => () => _modifier_mois(data),
-                              name: "Valider",
-                              color: Colors.blue),
+                          Container(
+                            width: 165,
+                            child: Button(
+                                onPressed: () => () => _modifier_mois(data),
+                                name: "Valider",
+                                color: Colors.blue),
+                          ),
                         ],
                       ),
                     )
@@ -213,11 +222,11 @@ class _ModifierMoisState extends State<ModifierMois> {
       loading(context);
       if(_mois == null){
         Navigator.pop(context);
-        showAlertDialog(context, "Warning", "Veuillez séléctionner le mois!");
+        showAlertDialog(context, "Warning","Veuillez séléctionner le mois!");
       }else if(selectedDate == null){
         print(selectedDate);
         Navigator.pop(context);
-        showAlertDialog(context, "Warning", "Veuillez séléctionner la date!");
+        showAlertDialog(context, "Warning","Veuillez séléctionner la date!");
       }
 
       data!.nom_mois = _mois;

@@ -2,6 +2,7 @@ import 'dart:ffi';
 
 import 'package:bv/class/Mois.dart';
 import 'package:bv/model/Mois.dart';
+import 'package:bv/model/User.dart';
 import 'package:bv/pages/mois/ajouterMois.dart';
 import 'package:bv/pages/mois/modifierMois.dart';
 import 'package:bv/services/db.dart';
@@ -10,7 +11,9 @@ import 'package:bv/utils/functions.dart';
 import 'package:bv/utils/loading.dart';
 import 'package:bv/widgets/donnees_vide.dart';
 import 'package:bv/widgets/ligne_horizontale.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -18,6 +21,10 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class MoisController extends StatefulWidget{
+
+  UserM? userM;
+  MoisController({required this.userM});
+
   @override
   State<StatefulWidget> createState() {
     return MoisState();
@@ -26,12 +33,33 @@ class MoisController extends StatefulWidget{
 
 class MoisState extends State<MoisController>{
 
+  UserM? utilisateurs;
   var connectionStatus;
   late InternetConnectionChecker connectionChecker;
+  // Déclarations des variables
+  String? nom_mois, nouvel_index, ancien_index, montant_mois, date_mois, roles;
+  /* -- début du teste --*/
+  List<Mois> _allMois = [];
+  List<Mois> _resultListMois = [];
+
+  final TextEditingController _searchController = TextEditingController();
+
+  getMoisStream() async{
+    var data = await FirebaseFirestore.instance.collection("mois").get();
+    setState(() {
+      _allMois = data.docs.map((e) {
+        return Mois.fromJson(e.data() as Map<String, dynamic>);
+      }).toList();
+      _resultListMois = List.from(_allMois);
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+    getMoisStream();
+    utilisateurs = widget.userM;
+    roles = utilisateurs!.roles!;
     connectionChecker = InternetConnectionChecker();
     connectionChecker.onStatusChange.listen((status) {
       setState(() {
@@ -46,8 +74,10 @@ class MoisState extends State<MoisController>{
 
   @override
   Widget build(BuildContext context) {
-    final List<Mois> moisFacture = Provider.of<List<Mois>>(context);
+   // final List<Mois> moisFacture = Provider.of<List<Mois>>(context);
+    getMoisStream();
     return Scaffold(
+      backgroundColor:_resultListMois.length == 0 ? Colors.white : Colors.grey[300],
       appBar: AppBar(
         backgroundColor: Colors.green,
         title: Text("Mois"),
@@ -57,17 +87,32 @@ class MoisState extends State<MoisController>{
               icon: Icon(Icons.add))
         ],
       ),
-      body: ListView.builder(
-          itemCount: moisFacture.length,
+      body: _resultListMois.length == 0
+          ?
+            Center(child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Veuillez patientez...", style: GoogleFonts.roboto(fontSize: 18, color: Colors.green),),
+                SpinKitThreeBounce(
+                  color: Colors.green,
+                  size: 30,
+                ),
+              ],
+            ),)
+          : ListView.builder(
+          itemCount: _resultListMois.length,
           itemBuilder: (context , i){
-            Mois mois = moisFacture[i];
+            Mois mois = _resultListMois[i];
             return mois == null
             ? DonneesVide()
             : Padding(
               padding: EdgeInsets.symmetric(horizontal: 5),
               child: InkWell(
                 onLongPress: (){
-                  _modifierOuSupprimer(context, mois: mois);
+                  roles == "Administrateurs" ?
+                  _modifierOuSupprimer(context, mois: mois)
+                      :
+                      showAlertDialog(context, "Info", "Vous n'êtes pas un Administrateur! Vous n'avez pas eu accès!");
                 },
                 child: Card(
                   elevation: 5.0,
@@ -197,7 +242,7 @@ class MoisState extends State<MoisController>{
               height: 75,
               child: Column(
                 children: [
-                  Ligne(color: Colors.blueGrey,),
+                  Ligne(color: Colors.green,),
                   SizedBox(height: 10,),
                   Text("Voulez-vous vraiment supprimer ce mois?", textAlign: TextAlign.center,style: GoogleFonts.roboto(color: Colors.blueGrey, fontSize: 15),),
                   SizedBox(height: 5,),

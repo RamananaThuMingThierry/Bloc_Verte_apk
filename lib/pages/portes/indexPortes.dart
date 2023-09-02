@@ -12,6 +12,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -104,8 +106,9 @@ class PortesState extends State<PortesController>{
 
   @override
   Widget build(BuildContext context) {
-
+    getPortesStream();
     return Scaffold(
+      backgroundColor: _resultList.length == 0 ? Colors.white : Colors.grey[300],
       appBar: AppBar(
         backgroundColor: Colors.green,
         title: Text("Portes"),
@@ -116,8 +119,7 @@ class PortesState extends State<PortesController>{
           )
         ],
       ),
-      body:
-      Column(
+      body: Column(
         children: [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 2.0, vertical: 2),
@@ -149,6 +151,21 @@ class PortesState extends State<PortesController>{
               ),
             ),
           ),
+          _resultList.length == 0
+              ?
+          Expanded(
+            child: Center(child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Veuillez patientez...", style: GoogleFonts.roboto(fontSize: 18, color: Colors.green),),
+                SpinKitThreeBounce(
+                  color: Colors.green,
+                  size: 30,
+                ),
+              ],
+            ),),
+          )
+              :
           Expanded(child:  ListView.builder(
               itemCount: _resultList!.length,
               itemBuilder: (context, i){
@@ -183,6 +200,9 @@ class PortesState extends State<PortesController>{
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(20),
                               child:  CachedNetworkImage(
+                                width: 200,
+                                height: 200,
+                                fit: BoxFit.cover,
                                 imageUrl: image!,
                                 placeholder: (context, url) => CircularProgressIndicator(), // Widget de chargement affiché pendant le chargement de l'image
                                 errorWidget: (context, url, error) => Icon(Icons.error), // Widget d'erreur affiché si l'image ne peut pas être chargée
@@ -253,11 +273,10 @@ class PortesState extends State<PortesController>{
                     ),
                   ),
                   Container(
-                    height: 300,
-                    width: MediaQuery.of(context).size.width,
                     child: (portes!.image == null )
-                        ? Image.asset("assets/photo.png", fit: BoxFit.contain,)
+                        ? Image.asset("assets/photo.png", fit: BoxFit.cover,)
                         : CachedNetworkImage(
+                      fit: BoxFit.cover,
                       imageUrl: portes!.image!,
                       placeholder: (context, url) => CircularProgressIndicator(), // Widget de chargement affiché pendant le chargement de l'image
                       errorWidget: (context, url, error) => Icon(Icons.error), // Widget d'erreur affiché si l'image ne peut pas être chargée

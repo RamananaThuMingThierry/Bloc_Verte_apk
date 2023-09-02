@@ -5,6 +5,7 @@ import 'package:bv/services/authservices.dart';
 import 'package:bv/widgets/button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class Status extends StatefulWidget{
   @override
@@ -41,7 +42,10 @@ class StatusState extends State<Status>{
           return Center(child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CircularProgressIndicator(),
+              SpinKitThreeBounce(
+                color: Colors.green,
+                size: 30,
+              ),
             ],
           ),);
         }else{

@@ -1,15 +1,16 @@
 import 'package:bv/model/Index.dart';
 import 'package:bv/utils/constant.dart';
 import 'package:bv/utils/functions.dart';
+import 'package:bv/utils/loading.dart';
 import 'package:bv/widgets/donnees_vide.dart';
 import 'package:bv/widgets/ligne_horizontale.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-
-import '../../model/Portes.dart';
 
 class FacturesController extends StatefulWidget{
   @override
@@ -19,6 +20,42 @@ class FacturesController extends StatefulWidget{
 }
 
 class FacturesState extends State<FacturesController>{
+  // Déclarations des variables
+
+  var connectionStatus;
+  late InternetConnectionChecker connectionChecker;
+
+  List<Indexs> _allIndex = [];
+  List<Indexs> _resultListIndex = [];
+
+  getIndexsStream() async{
+    var data = await FirebaseFirestore.instance.collection("index").get();
+    setState(() {
+      _allIndex = data.docs.map((e) {
+        return Indexs.fromJson(e.data() as Map<String, dynamic>);
+      }).toList();
+      _resultListIndex = List.from(_allIndex);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getIndexsStream();
+    fetchPortes();
+    fetchIndex();
+    fetchMois();
+    connectionChecker = InternetConnectionChecker();
+    connectionChecker.onStatusChange.listen((status) {
+      setState(() {
+        connectionStatus = status.toString();
+      });
+      if (connectionStatus ==
+          InternetConnectionStatus.disconnected.toString()) {
+        Message(context);
+      }
+    });
+  }
 
   var position = 0;
   List Listesportes = [];
@@ -46,7 +83,6 @@ class FacturesState extends State<FacturesController>{
 
   fetchMois() async{
     QuerySnapshot qn = await FirebaseFirestore.instance.collection("mois").get();
-    QuerySnapshot index = await FirebaseFirestore.instance.collection("index").get();
     setState(() {
       for(int i_mois = 0; i_mois < qn.docs.length; i_mois++){
         Listesmois.add(
@@ -76,20 +112,11 @@ class FacturesState extends State<FacturesController>{
     });
   }
 
-
-  @override
-  void initState() {
-    super.initState();
-    fetchPortes();
-    fetchIndex();
-    fetchMois();
-  }
-
   @override
   Widget build(BuildContext context) {
-    final List<Indexs> indexParPortes = Provider.of<List<Indexs>>(context);
+
     return Scaffold(
-      backgroundColor: Colors.grey,
+      backgroundColor: _resultListIndex.length == 0 ? Colors.white : Colors.grey[300],
       appBar: AppBar(
         backgroundColor: Colors.green,
         title: Text("Factures"),
@@ -100,7 +127,20 @@ class FacturesState extends State<FacturesController>{
           ),
         ],
       ),
-      body: StreamBuilder(
+      body: _resultListIndex.length == 0
+          ?
+      Center(child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text("Veuillez patientez...", style: GoogleFonts.roboto(fontSize: 18, color: Colors.green),),
+          SpinKitThreeBounce(
+            color: Colors.green,
+            size: 30,
+          ),
+        ],
+      ),)
+          :
+      StreamBuilder(
         stream: FirebaseFirestore.instance.collection('mois').snapshots(),
         builder: (context, AsyncSnapshot snapshot){
           if(snapshot.hasData){
@@ -133,8 +173,7 @@ class FacturesState extends State<FacturesController>{
                         child: Container(
                           width: 350,
                           child: Card(
-                            color: Colors.white,
-                            elevation: 5.0,
+                            elevation: 2.0,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
@@ -228,9 +267,9 @@ class FacturesState extends State<FacturesController>{
                                   height: 300,
                                   child: ListView.builder(
                                       scrollDirection: Axis.vertical,
-                                      itemCount: indexParPortes.length,
+                                      itemCount: _resultListIndex.length,
                                       itemBuilder: (context, j){
-                                        Indexs index = indexParPortes[j];
+                                        Indexs index = _resultListIndex[j];
                                         double? ancien = double.parse(index.ancien_index!);
                                         double? news = double.parse(index.nouvel_index!);
                                         double? consommerIndex = (news - ancien) as double?;
@@ -296,9 +335,16 @@ class FacturesState extends State<FacturesController>{
 
                 });
           }
-          return Center(
-            child: CircularProgressIndicator(),
-          );
+          return Center(child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("Veuillez patientez...", style: GoogleFonts.roboto(fontSize: 18, color: Colors.green),),
+              SpinKitThreeBounce(
+                color: Colors.green,
+                size: 30,
+              ),
+            ],
+          ),);
         },
       ),
     );
@@ -325,8 +371,11 @@ class FacturesState extends State<FacturesController>{
                   )
                 :  CircleAvatar(
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(100),
                 child:  CachedNetworkImage(
+                  width: 200,
+                  height: 200,
+                  fit: BoxFit.cover,
                   imageUrl: image!,
                   placeholder: (context, url) => CircularProgressIndicator(), // Widget de chargement affiché pendant le chargement de l'image
                   errorWidget: (context, url, error) => Icon(Icons.error), // Widget d'erreur affiché si l'image ne peut pas être chargée

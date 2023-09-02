@@ -1,7 +1,8 @@
+import 'package:bv/auth/resetPassword.dart';
 import 'package:bv/auth/signUp.dart';
 import 'package:bv/services/authservices.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 import '../utils/loading.dart';
@@ -50,99 +51,86 @@ class _LoginState extends State<Login1> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
-        child: Form(
-          key: _key,
-          child: Container(
-            child: Column(
-              children: [
-                Container(
-                  height: 120,
-                  width: double.infinity,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text("Connexion", style: TextStyle(
-                        fontSize: 50,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blueGrey,
-                      ),),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 20),
-                        child: Container(
-                          height: 2,
-                          width: 90,
-                          color: Colors.yellow,
+        child: Center(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Form(
+                key: _key,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 300,
+                      child: Image(image: AssetImage("assets/fond.png"),),
+                    ),
+                    Text("Trano Maitso", style: GoogleFonts.bebasNeue(fontSize: 52, fontWeight: FontWeight.bold, color: Colors.green),),
+                    SizedBox(height: 25,),
+                    MyTextFieldForm(
+                        edit: false,
+                        value: "",
+                        name: "Email",
+                        onChanged: () => (value) => setState(() {
+                          email = value;
+                        }),
+                        validator:() =>  (value){
+                          if(value == ""){
+                            return "Veuillez saisir votre adresse e-mail!";
+                          }else if(!regExp.hasMatch(value!)){
+                            return "Votre adresse e-mail est invalide!";
+                          }
+                        },
+                        iconData: Icons.mail,
+                        textInputType: TextInputType.emailAddress
+                    ),
+                    SizedBox(height: 20,),
+                    // Password
+                    PasswordFieldForm(
+                        visibility: visibility,
+                        validator: () => (value){
+                          if(value == ""){
+                            return "Veuillez remplir ce champs";
+                          }else if(value!.length < 8){
+                            return "Votre mot de passe doit avoir au moins 8 caractères";
+                          }
+                        },
+                        name: "Mot de passe",
+                        onTap: () => (){
+                          FocusScope.of(context).unfocus();
+                          setState(() {
+                            visibility = !visibility;
+                          });
+                          print("${visibility}");
+                        },
+                        onChanged: () => (value) => setState(() {
+                          mot_de_passe = value;
+                        })
+                    ),
+                    SizedBox(height: 10,),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        GestureDetector(
+                          onTap: (){
+                            Navigator.push(context, MaterialPageRoute(builder: (ctx) => resetPassword()));
+                          },
+                          child: Text("Mot de passe oublie?", style: GoogleFonts.roboto(color: Colors.blue,),),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                    SizedBox(height: 10,),
+                    Container(
+                      width: 350,
+                      child: Button(
+                          onPressed: () => validation,
+                          name: "Se conntecter",
+                          color: Colors.green),
+                    ),
+                  ],
                 ),
-                SizedBox(height: 20,),
-                Container(
-                  height: 170,
-                  margin: EdgeInsets.symmetric(horizontal: 10 ),
-                  width: double.infinity,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      // Email
-                      MyTextFieldForm(
-                          edit: false,
-                          value: "",
-                          name: "Email",
-                          onChanged: () => (value) => setState(() {
-                            email = value;
-                          }),
-                          validator:() =>  (value){
-                            if(value == ""){
-                              return "Veuilez remplir ce champs";
-                            }else if(!regExp.hasMatch(value!)){
-                              return "Email invalide!";
-                            }
-                          },
-                          iconData: Icons.mail,
-                          textInputType: TextInputType.emailAddress),
-                      // Password
-                      PasswordFieldForm(
-                          visibility: visibility,
-                          validator: () => (value){
-                            if(value == ""){
-                              return "Veuillez remplir ce champs";
-                            }else if(value!.length < 8){
-                              return "Votre mot de passe doit avoir au moins 8 caractères";
-                            }
-                          },
-                          name: "Mot de passe",
-                          onTap: () => (){
-                            FocusScope.of(context).unfocus();
-                            setState(() {
-                              visibility = !visibility;
-                            });
-                            print("${visibility}");
-                          },
-                          onChanged: () => (value) => setState(() {
-                            mot_de_passe = value;
-                          })
-                      )
-                    ],
-                  ),
-                ),
-                Padding(padding: EdgeInsets.symmetric(horizontal: 20),
-                  child:  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text("Mot de passe oublie!", style: TextStyle(color: Colors.blueAccent),),
-                    ],
-                  ),),
-                SizedBox(height: 10,),
-                Button(
-                  color: Colors.green,
-                  name: "Login",
-                  onPressed: () => validation,
-                ),
-              ],
+              ),
             ),
           ),
         ),

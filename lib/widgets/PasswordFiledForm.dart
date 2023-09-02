@@ -13,9 +13,10 @@ class PasswordFieldForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return    TextFormField(
+      style: TextStyle(color: Colors.blueGrey),
       decoration: InputDecoration(
         hintText: name,
-        suffixIconColor: Colors.grey,
+        suffixIconColor: Colors.blueGrey,
         enabledBorder : UnderlineInputBorder(
           borderSide: BorderSide(
               color: Colors.grey
@@ -23,14 +24,14 @@ class PasswordFieldForm extends StatelessWidget {
         ),
         focusedBorder: UnderlineInputBorder(
             borderSide: BorderSide(
-              color: Colors.brown,
+              color: Colors.blueGrey,
             )
         ),
         suffixIcon: GestureDetector(
           onTap: onTap(),
           child: visibility ? Icon(Icons.visibility_outlined, color: Colors.grey,) : Icon(Icons.visibility_off_outlined),
         ),
-        hintStyle: TextStyle(color: Colors.grey),
+        hintStyle: TextStyle(color: Colors.blueGrey),
       ),
       obscureText: visibility,
       keyboardType: TextInputType.text,

@@ -33,6 +33,7 @@ class AjouterPortesState extends State<AjouterPortes>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[300],
       appBar: AppBar(
         backgroundColor: Colors.green,
         centerTitle: true,
@@ -146,15 +147,21 @@ class AjouterPortesState extends State<AjouterPortes>{
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Button(
-                            onPressed: () => () => Navigator.pop(context),
-                            color: Colors.red,
-                            name: "Annuler",
+                          Container(
+                            width: 160,
+                            child: Button(
+                              onPressed: () => () => Navigator.pop(context),
+                              color: Colors.red,
+                              name: "Annuler",
+                            ),
                           ),
-                          Button(
-                            onPressed: () => () => _ajouter_porte(),
-                            color: Colors.blue,
-                            name: "Valider",
+                          Container(
+                            width: 160,
+                            child: Button(
+                              onPressed: () => () => _ajouter_porte(),
+                              color: Colors.blue,
+                              name: "Valider",
+                            ),
                           )
                         ],
                       ),

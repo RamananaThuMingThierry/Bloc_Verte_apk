@@ -1,3 +1,4 @@
+import 'package:bv/utils/constant.dart';
 import 'package:bv/widgets/ligne_horizontale.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -99,32 +100,76 @@ void deconnectionAlertDialog(BuildContext context){
       barrierDismissible: true,
       builder: (BuildContext buildContext){
         return AlertDialog(
-          title: Text("Déconnection", textAlign:TextAlign.center,style: TextStyle(color: Colors.green),),
+          title: Text("Déconnexion ?", textAlign:TextAlign.center,style: TextStyle(color: Colors.green),),
           content: SizedBox(
             height: 80,
             child: Column(
               children: [
                 Ligne(color: Colors.blueGrey,),
                 SizedBox(height: 5,),
-                Text("Voulez-vous vraiment vous déconnecter?", textAlign: TextAlign.center,style: GoogleFonts.roboto(color: Colors.blueGrey, fontSize: 17),),
+                Text("Souhaitez-vous vraiment vous déconnecter?", textAlign: TextAlign.center,style: GoogleFonts.roboto(color: Colors.blueGrey, fontSize: 17),),
                 SizedBox(height: 5,),
               ],
             ),
           ),
-          contentPadding: EdgeInsets.only(top: 10.0, left: 5.0, right: 5.0),
+          contentPadding: EdgeInsets.symmetric(horizontal: 5),
           actions: [
-            TextButton(
-                onPressed: (){
-                  Navigator.pop(context);
-                  print("Annuler");
-                },
-                child: Text("Annuler", style: TextStyle(color: Colors.redAccent),)),
-            TextButton(
-                onPressed: (){
-                  Navigator.pop(context);
-                  onLoading(context);
-                }, child: Text("Ok",style: TextStyle(color: Colors.blueGrey),)),
+            Card(
+              elevation: 0,
+              shape: Border(top: BorderSide(width: 1, color: Colors.blueGrey)),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                      onPressed: (){
+                        Navigator.pop(context);
+                        print("Annuler");
+                      },
+                      child: Text("Annuler", style: TextStyle(color: Colors.redAccent),)),
+                  Text("|", style: TextStyle(color: Colors.green),),
+                  TextButton(
+                      onPressed: (){
+                        Navigator.pop(context);
+                        onLoading(context);
+                      }, child: Text("Ok",style: TextStyle(color: Colors.blueGrey),)),
+                ],
+              ),
+            ),
           ],
+        );
+      });
+}
+
+// Alert pour un mauvaise mot de passe
+void badPassword(BuildContext context){
+  showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext buildContext){
+        return AlertDialog(
+          title: Center(child: Text("Avertissement", style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),)),
+          content: SizedBox(
+            height: 130,
+            child: Column(
+              children: [
+                Ligne(color: Colors.blueGrey,),
+                SizedBox(height: 5,),
+                Text("Votre ancien mot de passe n'est pas valide!", textAlign: TextAlign.center,style: GoogleFonts.roboto(color: Colors.blueGrey, fontSize: 17),),
+                SizedBox(height: 5,),
+                Ligne(color: Colors.blueGrey),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(onPressed: () => Navigator.pop(context), child:  Text("Ok", style: TextStyle(color: Colors.blue),),),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          contentPadding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
         );
       });
 }
@@ -176,3 +221,32 @@ String formatAmount(String price){
   priceText = priceText +"." +price.split(".")[1];
   return priceText.trim();
 }
+
+Padding TextTitre({String? name}){
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 18),
+    child: Row(
+      children: [
+        Text("${name}", style: style.copyWith(color: Colors.green, fontWeight: FontWeight.bold),),
+      ],
+    ),
+  );
+}
+
+Widget CardText({IconData? iconData, String? value}){
+  return TextFormField(
+    enabled: false,
+    style: TextStyle(color: Colors.blueGrey),
+    onFieldSubmitted: (arg){},
+    decoration: InputDecoration(
+      enabledBorder: InputBorder.none,
+      focusedBorder: InputBorder.none,
+      hintText: "${value}",
+      hintStyle: TextStyle(fontSize: 15, color: Colors.grey),
+      prefixIcon: Icon(iconData, color: Colors.blueGrey, size: 20,),
+    ),
+    textInputAction: TextInputAction.search,
+    textAlignVertical: TextAlignVertical.center,
+  );
+}
+

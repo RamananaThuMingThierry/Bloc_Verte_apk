@@ -31,6 +31,7 @@ class AjouterIndexState extends State<AjouterIndex>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[300],
       appBar: AppBar(
         title: Text("Ajouter un Index"),
         backgroundColor: Colors.green,
@@ -43,7 +44,7 @@ class AjouterIndexState extends State<AjouterIndex>{
             children: [
               Card(
                 shape: Border(bottom: BorderSide(color: Colors.green, width: 3)),
-                elevation: 3.0,
+                elevation: 1.0,
                 child: Container(
                   height: 50.0,
                   width: double.infinity,
@@ -53,7 +54,7 @@ class AjouterIndexState extends State<AjouterIndex>{
               ),
               Padding(padding: EdgeInsets.only(top: 1)),
               Card(
-                elevation: 3.0,
+                elevation: 1.0,
                 shape: Border(),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -65,7 +66,7 @@ class AjouterIndexState extends State<AjouterIndex>{
                         value: mois_id,
                         underline: SizedBox(height: 0,),
                         hint: Container(
-                          child: Text("Choisir le mois                                            ", style: TextStyle(color: Colors.blueGrey),),
+                          child: Text("Choisir le mois                                                  ", style: TextStyle(color: Colors.blueGrey),),
                         ),
                         icon: Container(
                           child: Icon(
@@ -97,7 +98,7 @@ class AjouterIndexState extends State<AjouterIndex>{
                         value: portes_id,
                         underline: SizedBox(height: 0,),
                         hint: Container(
-                          child: Text("Choisir le numéro de votre portes            ",style: TextStyle(color: Colors.blueGrey)),
+                          child: Text("Choisir le numéro de votre portes                 ",style: TextStyle(color: Colors.blueGrey)),
                         ),
                         icon: Container(
                           child: Icon(
@@ -157,19 +158,25 @@ class AjouterIndexState extends State<AjouterIndex>{
                           value: ""),
                     ),
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      padding: EdgeInsets.symmetric(horizontal: 5),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Button(
-                              color: Colors.redAccent,
-                              onPressed: () => () => Navigator.pop(context),
-                              name: "Annuler"
+                          Container(
+                            width: 165,
+                            child: Button(
+                                color: Colors.redAccent,
+                                onPressed: () => () => Navigator.pop(context),
+                                name: "Annuler"
+                            ),
                           ),
-                          Button(
-                              color: Colors.blue,
-                              onPressed: () => () => _ajouter_index(),
-                              name : "Valider"
+                          Container(
+                            width: 165,
+                            child: Button(
+                                color: Colors.blue,
+                                onPressed: () => () => _ajouter_index(),
+                                name : "Valider"
+                            ),
                           ),
                         ],
                       ),
@@ -190,10 +197,10 @@ class AjouterIndexState extends State<AjouterIndex>{
       loading(context);
       if(mois_id == null){
         Navigator.pop(context);
-        showAlertDialog(context, "Warning", "Veuillez séléctionner le mois!");
+        showAlertDialog(context, "Warning","Veuillez séléctionner le mois!");
       }else if(portes_id == null){
         Navigator.pop(context);
-        showAlertDialog(context, "Warning", "Veuillez séléctionner le numéro de porte!");
+        showAlertDialog(context, "Warning","Veuillez séléctionner le numéro de porte!");
       }
       final identifiant = await DbServices().countIndex();
       Indexs index = Indexs();
@@ -207,9 +214,9 @@ class AjouterIndexState extends State<AjouterIndex>{
       if(saveIndex == true){
         Navigator.pop(context);
         Navigator.pop(context);
-        showAlertDialog(context, "Success", "Sauvegarde avec succès!");
+        showAlertDialog(context, "Success","Sauvegarde avec succès!");
       }else{
-        showAlertDialog(context, "Warning", "Erreur de sauvegarde!");
+        showAlertDialog(context, "Danger","Erreur de sauvegarde!");
       }
     }else{
       print("Non");

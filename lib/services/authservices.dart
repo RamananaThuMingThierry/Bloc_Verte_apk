@@ -1,6 +1,8 @@
+import 'package:bv/auth/updatePassword.dart';
 import 'package:bv/model/User.dart';
 import 'package:bv/services/db.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class AuthServices{
 
@@ -38,6 +40,31 @@ class AuthServices{
   Future<bool> signin(String email, String pass) async{
     try{
       final result = await auth.signInWithEmailAndPassword(email: email, password: pass);
+      if(result != null){
+        return true;
+      }else{
+        return false;
+      }
+    }catch(e){
+      return false;
+    }
+  }
+
+  Future<bool> validationPassword(String password) async{
+    var firebaseUser = await auth.currentUser;
+    var authCredential = EmailAuthProvider.credential(email: firebaseUser!.email!, password: password);
+    try{
+      var authResultat = await firebaseUser.reauthenticateWithCredential(authCredential);
+      return authResultat!.user! != null;
+    }catch(e){
+      print(e);
+      return false;
+    }
+  }
+
+  Future<bool> updatePassword(String email, String password) async{
+    try{
+      final result =  auth.currentUser!.updatePassword(password);
       if(result != null){
         return true;
       }else{

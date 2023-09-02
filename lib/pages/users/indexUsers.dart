@@ -8,11 +8,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:provider/provider.dart';
 
 class Utilisateurs extends StatefulWidget {
-  const Utilisateurs({Key? key}) : super(key: key);
+  UserM userM;
+  Utilisateurs({required this.userM});
 
   @override
   State<Utilisateurs> createState() => _UtilisateursState();
@@ -21,6 +24,7 @@ class Utilisateurs extends StatefulWidget {
 
 class _UtilisateursState extends State<Utilisateurs> {
   /*-- Déclarations des variables --*/
+  UserM? userConnecte;
   String? pseudo, email, genre, adresse, contact, image, roles;
 
   List<UserM> _allUsers = [];
@@ -80,6 +84,7 @@ class _UtilisateursState extends State<Utilisateurs> {
   void initState() {
     super.initState();
     getUsersStream();
+    userConnecte = widget.userM;
     _searchController.addListener(_onSearchChanged);
     connectionChecker = InternetConnectionChecker();
     connectionChecker.onStatusChange.listen((status) {
@@ -96,8 +101,11 @@ class _UtilisateursState extends State<Utilisateurs> {
   @override
   Widget build(BuildContext context) {
 
+    getUsersStream();
+
     return Scaffold(
-      appBar: AppBar(
+        backgroundColor: _resultList.length == 0 ? Colors.white : Colors.grey[300],
+        appBar: AppBar(
         title: Text("Utilisateurs"),
         backgroundColor: Colors.green,
         actions: [
@@ -131,6 +139,21 @@ class _UtilisateursState extends State<Utilisateurs> {
                 ),
               ),
           ),
+          _resultList.length == 0
+              ?
+          Expanded(
+            child: Center(child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Veuillez patientez...", style: GoogleFonts.roboto(fontSize: 18, color: Colors.green),),
+                SpinKitThreeBounce(
+                  color: Colors.green,
+                  size: 30,
+                ),
+              ],
+            ),),
+          )
+              :
           Expanded(child: ListView.builder(
               itemCount: _resultList!.length,
               itemBuilder: (context, i){
@@ -146,7 +169,7 @@ class _UtilisateursState extends State<Utilisateurs> {
                     : Padding(
                   padding: EdgeInsets.only(left: 2.0, right: 2.0),
                   child: InkWell(
-                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (ctx) => ShowUsers(user: user,))),
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (ctx) => ShowUsers(user: user, useConnecte: userConnecte!,))),
                     child: Card(
                       shape:  Border(left: BorderSide(color: Colors.green, width: 5)),
                       elevation: 3.0,
@@ -157,15 +180,19 @@ class _UtilisateursState extends State<Utilisateurs> {
                             foregroundColor: Colors.green, radius: 20.0,
                             backgroundImage: Image.asset("assets/photo.png").image)
                             :  CircleAvatar(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
-                            child:  CachedNetworkImage(
-                              imageUrl: image!,
-                              placeholder: (context, url) => CircularProgressIndicator(), // Widget de chargement affiché pendant le chargement de l'image
-                              errorWidget: (context, url, error) => Icon(Icons.error), // Widget d'erreur affiché si l'image ne peut pas être chargée
-                            ),
-                          ),
-                        ),
+                                foregroundColor: Colors.green, radius: 20.0,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(100),
+                                  child: CachedNetworkImage(
+                                    width: 250,
+                                    height: 250,
+                                    fit: BoxFit.cover,
+                                    imageUrl: image!,
+                                    placeholder: (context, url) => CircularProgressIndicator(), // Widget de chargement affiché pendant le chargement de l'image
+                                    errorWidget: (context, url, error) => Icon(Icons.error), // Widget d'erreur affiché si l'image ne peut pas être chargée
+                                  ),
+                                ),
+                              ),
                         //              backgroundImage: (portesPersonnes.image == null) ? Image.asset("assets/photo.png").image : Image.network(portesPersonnes!.image!).image),
                         title: Text("${pseudo}", maxLines: 1, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey), overflow: TextOverflow.ellipsis,),
                         subtitle: Container(
