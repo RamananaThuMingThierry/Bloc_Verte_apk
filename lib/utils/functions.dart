@@ -233,7 +233,7 @@ Padding TextTitre({String? name}){
   );
 }
 
-Widget CardText({IconData? iconData, String? value}){
+Widget CardText(BuildContext context, {IconData? iconData, String? value}){
   return TextFormField(
     enabled: false,
     style: TextStyle(color: Colors.blueGrey),
@@ -242,7 +242,7 @@ Widget CardText({IconData? iconData, String? value}){
       enabledBorder: InputBorder.none,
       focusedBorder: InputBorder.none,
       hintText: "${value}",
-      hintStyle: TextStyle(fontSize: 15, color: Colors.grey),
+      hintStyle: Theme.of(context).textTheme.headline6,
       prefixIcon: Icon(iconData, color: Colors.blueGrey, size: 20,),
     ),
     textInputAction: TextInputAction.search,

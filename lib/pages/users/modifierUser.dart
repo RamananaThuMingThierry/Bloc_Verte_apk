@@ -50,7 +50,6 @@ class _ModifierUsersState extends State<ModifierUsers> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.green,
         centerTitle: true,
@@ -195,10 +194,10 @@ class _ModifierUsersState extends State<ModifierUsers> {
                     },
                     validator:(value){
                       if(value!.isEmpty){
-                        return "Veuillez saisir votre nom!";
+                        return "Veuillez saisir votre pseudo!";
                       }
                     },
-                    style: TextStyle(color: Colors.blueGrey),
+                    style: TextStyle(color: Theme.of(context).primaryColorDark),
                     onFieldSubmitted: (arg){},
                     decoration: InputDecoration(
                       hintText: "${pseudo}",
@@ -211,7 +210,7 @@ class _ModifierUsersState extends State<ModifierUsers> {
                   SizedBox(height: 10,),
                   TextTitre(name: "Email"),
                   TextFormField(
-                    style: TextStyle(color: Colors.blueGrey),
+                    style: TextStyle(color: Theme.of(context).primaryColorDark),
                     onFieldSubmitted: (arg){},
                     decoration: InputDecoration(
                       hintText: "${email}",
@@ -254,21 +253,20 @@ class _ModifierUsersState extends State<ModifierUsers> {
                                   genre = value;
                                 });
                               },
-                              dropdownColor: Colors.white,
                               value: genre,
                               items: [
                                 DropdownMenuItem(value: "Homme", child: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Icon(Icons.man,color: Colors.blueGrey,size: 25,),
-                                    Text("     Homme", style: TextStyle(color: Colors.blueGrey),),
+                                    Text("     Homme", style: TextStyle(color: Theme.of(context).primaryColorDark),),
                                   ],)
                                 ),
                                 DropdownMenuItem(value: "Femme", child: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Icon(Icons.woman,color: Colors.pinkAccent,),
-                                    Text("     Femme", style: TextStyle(color: Colors.pinkAccent),),
+                                    Text("     Femme", style: TextStyle(color: Theme.of(context).primaryColorDark),),
                                   ],)
                                 ),
                               ],
@@ -283,7 +281,7 @@ class _ModifierUsersState extends State<ModifierUsers> {
                   TextFormField(
                     keyboardType: TextInputType.number,
                     initialValue: "${contact ?? "Aucun"}",
-                    style: TextStyle(color: Colors.blueGrey),
+                    style: TextStyle(color: Theme.of(context).primaryColorDark),
                     onFieldSubmitted: (arg){},
                     decoration: InputDecoration(
                       hintText: "${contact ?? "Aucun"}",
@@ -307,7 +305,7 @@ class _ModifierUsersState extends State<ModifierUsers> {
                   TextTitre(name: "Adresse"),
                   TextFormField(
                     initialValue: "${adresse ?? ""}",
-                    style: TextStyle(color: Colors.blueGrey),
+                    style: TextStyle(color: Theme.of(context).primaryColorDark),
                     onFieldSubmitted: (arg){},
                     decoration: InputDecoration(
                       hintText: "${adresse ?? ""}",
@@ -340,27 +338,26 @@ class _ModifierUsersState extends State<ModifierUsers> {
                           DropdownButtonHideUnderline(
                             child: DropdownButton(
                               borderRadius: BorderRadius.circular(5),
-                              hint: Text(" Rôles                                                                     ", style: TextStyle(color: Colors.blueGrey),),
+                              hint: Text(" Rôles                                                                     ", style: TextStyle(color: Theme.of(context).primaryColorDark),),
                               onChanged: (String? value){
                                 setState(() {
                                   roles = value;
                                 });
                               },
-                              dropdownColor: Colors.white,
                               value: roles,
                               items: [
                                 DropdownMenuItem(value: "Administrateurs", child: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Icon(Icons.key,color: Colors.blueGrey,size: 25,),
-                                    Text("     Administrateurs", style: TextStyle(color: Colors.blueGrey),),
+                                    Text("     Administrateurs", style: TextStyle(color: Theme.of(context).primaryColorDark),),
                                   ],)
                                 ),
                                 DropdownMenuItem(value: "Utilisateurs", child: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Icon(Icons.key_off,color: Colors.blueGrey,),
-                                    Text("     Utilisateurs", style: TextStyle(color: Colors.blueGrey),),
+                                    Text("     Utilisateurs", style: TextStyle(color: Theme.of(context).primaryColorDark),),
                                   ],)
                                 ),
                               ],
@@ -370,7 +367,6 @@ class _ModifierUsersState extends State<ModifierUsers> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 10,),
                   Container(
                     width: 350,
                     child: Button(onPressed: () => () => modifierProfile(context), name: "Modifier", color: Colors.green),

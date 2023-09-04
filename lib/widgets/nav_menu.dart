@@ -8,8 +8,8 @@ class navMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(iconData, color:  Colors.green,),
-      title: Text("${name}",style: TextStyle(color: Colors.blueGrey),),
+      leading: Icon(iconData, color:Theme.of(context).primaryColor),
+      title: Text("${name}",style: Theme.of(context).textTheme.headline6),
       onTap: onTap(),
     );
   }

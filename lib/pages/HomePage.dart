@@ -10,13 +10,12 @@ import 'package:bv/pages/messages/chat.dart';
 import 'package:bv/pages/mois/moisIndex.dart';
 import 'package:bv/pages/nousContactez/nousContactez.dart';
 import 'package:bv/pages/parametres/langue.dart';
-import 'package:bv/pages/parametres/themes.dart';
 import 'package:bv/pages/portes/indexPortes.dart';
 import 'package:bv/pages/users/indexUsers.dart';
 import 'package:bv/pages/users/profile.dart';
 import 'package:bv/services/authservices.dart';
 import 'package:bv/services/db.dart';
-import 'package:bv/utils/constant.dart';
+import 'package:bv/themes/themes_provider.dart';
 import 'package:bv/utils/functions.dart';
 import 'package:bv/widgets/ligne_horizontale.dart';
 import 'package:bv/widgets/nav_menu.dart';
@@ -38,6 +37,7 @@ class _HomePageState extends State<HomePage> {
 
   // Déclaration des variables
   UserM? userm;
+
   GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
   AuthServices auth = AuthServices();
   var theme;
@@ -62,6 +62,10 @@ class _HomePageState extends State<HomePage> {
     Facture("Utilisateurs", Icons.people),
   ];
 
+  bool ChangeMode(BuildContext context){
+    return Theme.of(context).brightness == Brightness.light  ? true : false;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -76,8 +80,6 @@ class _HomePageState extends State<HomePage> {
         child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text("Veuillez patientez...", style: TextStyle(fontSize: 18, color: Colors.green),),
-          SizedBox(height: 10,),
           SpinKitCircle(
             color: Colors.green,
             size: 50,
@@ -86,7 +88,6 @@ class _HomePageState extends State<HomePage> {
       ),
     ) :
       Scaffold(
-      backgroundColor: Colors.grey[300],
       key: _key,
       appBar: AppBar(
         title: Text("Accueil", style: TextStyle(color: Colors.white),),
@@ -100,7 +101,14 @@ class _HomePageState extends State<HomePage> {
         automaticallyImplyLeading: false,
         backgroundColor: Colors.green,
         actions: [
-          IconButton(onPressed: (){}, icon: Icon(Icons.notifications_none, color: Colors.white,))
+          IconButton(
+              onPressed: () {
+              final themeProvider = Provider.of<BlocVerteTheme>(context, listen: false);
+              themeProvider.toggleTheme();
+            },
+              icon: ChangeMode(context) == false ? Icon(Icons.light_mode) : Icon(Icons.dark_mode)
+          ),
+          IconButton(onPressed: (){}, icon: Icon(Icons.notifications_none, color: Colors.white,)),
         ],
       ),
       drawer: ClipPath(
@@ -125,8 +133,8 @@ class _HomePageState extends State<HomePage> {
                     ),
                     // backgroundImage: (userm!.image == null) ? Image.asset("assets/photo.png").image : Image.network(userm!.image!).image
                 ),
-                accountName: Text("${userm!.pseudo ?? "Aucun"}"),
-                accountEmail: Text("${userm!.email ?? "Aucun"}", overflow: TextOverflow.ellipsis,),
+                accountName: Text("${userm!.pseudo ?? "Aucun"}", style: GoogleFonts.roboto(color: Colors.white),),
+                accountEmail: Text("${userm!.email ?? "Aucun"}", overflow: TextOverflow.ellipsis, style: GoogleFonts.roboto(color: Colors.white),),
                 decoration: BoxDecoration(
                     image: DecorationImage(
                         image: AssetImage("assets/no_image.jpg"),
@@ -210,8 +218,8 @@ class _HomePageState extends State<HomePage> {
                     child:  Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Icon(facture.iconData, size: 40.0, color: Colors.green,),
-                        Text("${facture.nom}", style: style.copyWith(color: Colors.blueGrey, fontSize: 15, fontWeight: FontWeight.bold),),
+                        Icon(facture.iconData, size: 40.0, color: Theme.of(context).primaryColor,),
+                        Text("${facture.nom}", style: Theme.of(context).textTheme.headline6),
                       ],
                     ),
                   ),
@@ -304,7 +312,6 @@ class _HomePageState extends State<HomePage> {
                       SizedBox(width: 10,),
                       TextButton(onPressed: (){
                         Navigator.pop(context);
-                        Navigator.push(context, MaterialPageRoute(builder: (ctx) => Themes()));
                         }, child:  Text("Sélectionner un thème", style: TextStyle(color: Colors.grey),),)
                     ],
                   ),

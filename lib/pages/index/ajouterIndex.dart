@@ -31,7 +31,6 @@ class AjouterIndexState extends State<AjouterIndex>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
       appBar: AppBar(
         title: Text("Ajouter un Index"),
         backgroundColor: Colors.green,
@@ -43,13 +42,13 @@ class AjouterIndexState extends State<AjouterIndex>{
           child: Column(
             children: [
               Card(
-                shape: Border(bottom: BorderSide(color: Colors.green, width: 3)),
+                shape: Border(bottom: BorderSide(color: Colors.green, width: 2)),
                 elevation: 1.0,
                 child: Container(
                   height: 50.0,
                   width: double.infinity,
                   padding: EdgeInsets.only(top: 15.0),
-                  child: Text("Informations", textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey, fontSize: 18.0),),
+                  child: Text("Informations", textAlign: TextAlign.center, style: Theme.of(context).textTheme.headline4,),
                 ),
               ),
               Padding(padding: EdgeInsets.only(top: 1)),
@@ -66,12 +65,12 @@ class AjouterIndexState extends State<AjouterIndex>{
                         value: mois_id,
                         underline: SizedBox(height: 0,),
                         hint: Container(
-                          child: Text("Choisir le mois                                                  ", style: TextStyle(color: Colors.blueGrey),),
+                          child: Text("Choisir le mois                                                  ", style: Theme.of(context).textTheme.headline5),
                         ),
                         icon: Container(
                           child: Icon(
                             Icons.arrow_drop_down,
-                            color: Colors.blueGrey,
+                            color: Theme.of(context).primaryColorDark,
                           ),
                         ),
                         onChanged: (String? new_value){
@@ -83,7 +82,7 @@ class AjouterIndexState extends State<AjouterIndex>{
                             .map<DropdownMenuItem<String>>((value) {
                           return DropdownMenuItem<String>(
                               value: value,
-                              child: Tooltip(message: value, child: Container(margin: EdgeInsets.only(left: 4, right: 4),child: Text(value, style: TextStyle(color: Colors.blueGrey),),),));
+                              child: Tooltip(message: value, child: Center(child: Text(value, style: Theme.of(context).textTheme.headline6,)),));
                         }).toList(),
                       ),
                     ),
@@ -98,12 +97,12 @@ class AjouterIndexState extends State<AjouterIndex>{
                         value: portes_id,
                         underline: SizedBox(height: 0,),
                         hint: Container(
-                          child: Text("Choisir le numéro de votre portes                 ",style: TextStyle(color: Colors.blueGrey)),
+                          child: Text("Choisir le numéro de votre portes                 ",style: Theme.of(context).textTheme.headline5),
                         ),
                         icon: Container(
                           child: Icon(
                             Icons.arrow_drop_down,
-                            color: Colors.blueGrey,
+                            color: Theme.of(context).primaryColorDark,
                           ),
                         ),
                         onChanged: (String? new_value){
@@ -115,7 +114,7 @@ class AjouterIndexState extends State<AjouterIndex>{
                             .map<DropdownMenuItem<String>>((value) {
                           return DropdownMenuItem<String>(
                               value: value,
-                              child: Tooltip(message: value, child: Container(margin: EdgeInsets.only(left: 4, right: 4),child: Text(value, style: TextStyle(color: Colors.blueGrey),),),));
+                              child: Tooltip(message: value, child: Center(child: Text(value, style: Theme.of(context).textTheme.headline6,)),));
                         }).toList(),
                       ),
                     ),
@@ -158,12 +157,12 @@ class AjouterIndexState extends State<AjouterIndex>{
                           value: ""),
                     ),
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 5),
+                      padding: EdgeInsets.symmetric(horizontal: 10),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            width: 165,
+                            width: 160,
                             child: Button(
                                 color: Colors.redAccent,
                                 onPressed: () => () => Navigator.pop(context),
@@ -171,7 +170,7 @@ class AjouterIndexState extends State<AjouterIndex>{
                             ),
                           ),
                           Container(
-                            width: 165,
+                            width: 160,
                             child: Button(
                                 color: Colors.blue,
                                 onPressed: () => () => _ajouter_index(),

@@ -77,7 +77,6 @@ class MoisState extends State<MoisController>{
    // final List<Mois> moisFacture = Provider.of<List<Mois>>(context);
     getMoisStream();
     return Scaffold(
-      backgroundColor:_resultListMois.length == 0 ? Colors.white : Colors.grey[300],
       appBar: AppBar(
         backgroundColor: Colors.green,
         title: Text("Mois"),
@@ -124,7 +123,7 @@ class MoisState extends State<MoisController>{
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text("${mois.nom_mois}", style: TextStyle(color: Colors.blueGrey, fontWeight: FontWeight.bold, fontSize: 20.0))
+                          Text("${mois.nom_mois}", style: Theme.of(context).textTheme.headline5)
                         ],
                       ),
                       Ligne(color: Colors.grey,),
@@ -165,7 +164,7 @@ class MoisState extends State<MoisController>{
                           RichText(text: TextSpan(
                               children: [
                                 WidgetSpan(child: Padding(padding: EdgeInsets.only(right: 5.0), child: Icon(Icons.note_alt_outlined, color: Colors.grey,),)),
-                                TextSpan(text: "${formatAmount(double.parse(mois.ancien_index!).toString())}", style: TextStyle(color: Colors.blueGrey)),
+                                TextSpan(text: "${formatAmount(double.parse(mois.ancien_index!).toString())}", style: Theme.of(context).textTheme.headline5),
                               ]
                           ),
 
@@ -173,7 +172,7 @@ class MoisState extends State<MoisController>{
                           RichText(text: TextSpan(
                               children: [
                                 WidgetSpan(child: Padding(padding: EdgeInsets.only(left:80.0, right: 5.0), child: Icon(Icons.note_alt, color: Colors.grey,),)),
-                                TextSpan(text: "${formatAmount(double.parse(mois.nouvel_index!).toString())}", style: TextStyle(color: Colors.blueGrey)),
+                                TextSpan(text: "${formatAmount(double.parse(mois.nouvel_index!).toString())}", style: Theme.of(context).textTheme.headline5),
                               ]
                           ),
 
@@ -216,7 +215,7 @@ class MoisState extends State<MoisController>{
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Icon(Icons.payments_outlined, color: Colors.green,),
-                            Text("${formatAmount(mois.montant_mois!) ?? "0"} Ar", style: TextStyle(color: Colors.blueGrey, fontWeight: FontWeight.bold)),
+                            Text("${formatAmount(mois.montant_mois!) ?? "0"} Ar", style: Theme.of(context).textTheme.headline5),
                           ],
                         ),
                       ),

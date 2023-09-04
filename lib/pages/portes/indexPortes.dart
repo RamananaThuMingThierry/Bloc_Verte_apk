@@ -108,7 +108,6 @@ class PortesState extends State<PortesController>{
   Widget build(BuildContext context) {
     getPortesStream();
     return Scaffold(
-      backgroundColor: _resultList.length == 0 ? Colors.white : Colors.grey[300],
       appBar: AppBar(
         backgroundColor: Colors.green,
         title: Text("Portes"),
@@ -135,10 +134,10 @@ class PortesState extends State<PortesController>{
                   decoration: InputDecoration(
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
-                    suffixIcon: Icon(Icons.account_box_rounded, color: Colors.blueGrey,),
+                    suffixIcon: Icon(Icons.account_box_rounded, color: Theme.of(context).primaryColorDark,),
                     hintText: "Recherche",
-                    hintStyle: TextStyle(fontSize: 15, color: Colors.blueGrey),
-                    prefixIcon: Icon(Icons.search, color: Colors.blueGrey, size: 20,),
+                    hintStyle: Theme.of(context).textTheme.headline6,
+                    prefixIcon: Icon(Icons.search, color: Theme.of(context).primaryColorDark, size: 20,),
                   ),
                   textInputAction: TextInputAction.search,
                   textAlignVertical: TextAlignVertical.center,
@@ -187,7 +186,7 @@ class PortesState extends State<PortesController>{
                           trailing: RichText(
                             text: TextSpan(
                               children: [
-                                TextSpan(text : "${numero}", style: TextStyle(fontWeight: FontWeight.bold,color: Colors.blueGrey, fontSize: 25)),
+                                TextSpan(text : "${numero}", style: Theme.of(context).textTheme.headline4),
                                 WidgetSpan(child: Icon(Icons.door_front_door_outlined, color: Colors.grey,),),
                               ],
                             ),
@@ -210,7 +209,7 @@ class PortesState extends State<PortesController>{
                             ),
                           ),
                           //              backgroundImage: (portesPersonnes.image == null) ? Image.asset("assets/photo.png").image : Image.network(portesPersonnes!.image!).image),
-                          title: Text("${nom}", maxLines: 1, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey), overflow: TextOverflow.ellipsis,),
+                          title: Text("${nom}", maxLines: 1, style: Theme.of(context).textTheme.headline6, overflow: TextOverflow.ellipsis,),
                           subtitle: Container(
                             margin: EdgeInsets.only(top: 4.0),
                             child: Text("${contact}", style: TextStyle(color: Colors.grey),),
@@ -241,10 +240,9 @@ class PortesState extends State<PortesController>{
               borderRadius: BorderRadius.circular(2.0),
             ),
             elevation: 0.0,
-            backgroundColor: Colors.transparent,
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).primaryColorLight,
                 boxShadow: [
                   BoxShadow(color: Colors.black26,blurRadius: 10.0, offset: Offset(0.0,10.0)),
                 ],
@@ -266,7 +264,7 @@ class PortesState extends State<PortesController>{
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("Apropos", style: TextStyle(color: Colors.blueGrey, fontWeight: FontWeight.bold),),
+                          Text("Apropos", style: Theme.of(context).textTheme.headline5),
                           Icon(Icons.close, color: Colors.red,),
                         ],
                       ),
@@ -274,7 +272,7 @@ class PortesState extends State<PortesController>{
                   ),
                   Container(
                     child: (portes!.image == null )
-                        ? Image.asset("assets/photo.png", fit: BoxFit.cover,)
+                        ? Image.asset("assets/no_image.jpg", fit: BoxFit.cover,)
                         : CachedNetworkImage(
                       fit: BoxFit.cover,
                       imageUrl: portes!.image!,
@@ -282,6 +280,7 @@ class PortesState extends State<PortesController>{
                       errorWidget: (context, url, error) => Icon(Icons.error), // Widget d'erreur affiché si l'image ne peut pas être chargée
                     ),
                   ),
+                  SizedBox(height: 10,),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -291,13 +290,14 @@ class PortesState extends State<PortesController>{
                           text: TextSpan(
                             children: [
                               WidgetSpan(child: Icon(Icons.door_front_door_outlined, color: Colors.grey,),),
-                              TextSpan(text : "  ${portes.numero_porte}", style: TextStyle(fontWeight: FontWeight.bold,color: Colors.blueGrey, fontSize: 25)),
+                              TextSpan(text : "  ${portes.numero_porte}", style: Theme.of(context).textTheme.headline4),
                             ],
                           ),
                         ),
                       ),
                     ],
                   ),
+                  Ligne(color: Colors.grey),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -307,13 +307,14 @@ class PortesState extends State<PortesController>{
                           text: TextSpan(
                             children: [
                               WidgetSpan(child: Icon(Icons.account_box_sharp, color: Colors.grey,),),
-                              TextSpan(text : "  ${portes.nom}", style: TextStyle(color: Colors.blueGrey, fontSize: 15, fontWeight: FontWeight.bold)),
+                              TextSpan(text : "  ${portes.nom}", style: Theme.of(context).textTheme.headline5),
                             ],
                           ),
                         ),
                       ),
                     ],
                   ),
+                  Ligne(color: Colors.grey),
                   InkWell(
                     onTap: () => _Actions(numero: "${portes.contact}", action: "tel"),
                     child: Row(
@@ -325,7 +326,7 @@ class PortesState extends State<PortesController>{
                             text: TextSpan(
                               children: [
                                 WidgetSpan(child: Icon(Icons.phone, color: Colors.grey,),),
-                                TextSpan(text : "  ${portes.contact}", style: TextStyle(color: Colors.blueGrey, fontSize: 15)),
+                                TextSpan(text : "  ${portes.contact}", style: Theme.of(context).textTheme.headline5),
                               ],
                             ),
                           ),
@@ -333,6 +334,11 @@ class PortesState extends State<PortesController>{
                       ],
                     ),
                   ),
+                  utilisateurs!.roles == "Administrateurs"
+                      ?
+                      Ligne(color: Colors.grey)
+                      :
+                      SizedBox(height: 0,),
                   utilisateurs!.roles == "Administrateurs"
                       ? Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -344,8 +350,8 @@ class PortesState extends State<PortesController>{
                           child: RichText(
                             text: TextSpan(
                                 children: [
-                                  WidgetSpan(child: Icon(Icons.edit, color: Colors.blueGrey,)),
-                                  TextSpan(text: " Modifiier", style: TextStyle(color: Colors.blueGrey))
+                                  WidgetSpan(child: Icon(Icons.edit, color: Theme.of(context).primaryColorDark,)),
+                                  TextSpan(text: " Modifiier", style: Theme.of(context).textTheme.headline6)
                                 ]
                             ),
                           )),
@@ -356,7 +362,7 @@ class PortesState extends State<PortesController>{
                             text: TextSpan(
                                 children: [
                                   WidgetSpan(child: Icon(Icons.delete, color: Colors.redAccent,)),
-                                  TextSpan(text: " Supprimer", style: TextStyle(color: Colors.blueGrey))
+                                  TextSpan(text: " Supprimer", style: Theme.of(context).textTheme.headline6)
                                 ]
                             ),
                           )),

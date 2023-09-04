@@ -27,7 +27,6 @@ class _AjouterMoisState extends State<AjouterMois> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
       appBar: AppBar(
         backgroundColor: Colors.green,
         title: Text("Ajouter le mois"),
@@ -35,155 +34,166 @@ class _AjouterMoisState extends State<AjouterMois> {
           IconButton(onPressed: (){}, icon: Icon(Icons.calendar_month)),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(10.0),
-        child: Form(
-          key: _key,
-          child: Column(
-            children: [
-              Card(
-                elevation: 2.0,
-                child: Container(
-                  height: 50.0,
-                  width: 340.0,
-                  padding: EdgeInsets.only(top: 15.0),
-                  child: Text("Informations", textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey, fontSize: 18.0),),
-                ),
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+          child: SingleChildScrollView(
+            child: Form(
+              key: _key,
+              child: Column(
+                children: [
+                  Card(
+                    elevation: 1.0,
+                    shape: Border(),
+                    child: Container(
+                      height: 50.0,
+                      width: 340.0,
+                      padding: EdgeInsets.only(top: 15.0),
+                      child: Text("Informations", textAlign: TextAlign.center, style: Theme.of(context).textTheme.headline4,),
+                    ),
+                  ),
+                  Card(
+                    shape: Border(),
+                    elevation: 1.0,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(right: 5.0, left: 5.0),
+                          child: DropdownButton<String>(
+                            value: _mois,
+                            underline: SizedBox(height: 0,),
+                            hint: Container(
+                              child: Text("Choisir le mois                                                      ", style: Theme.of(context).textTheme.headline5,),
+                            ),
+                            icon: Container(
+                              child: Icon(
+                                Icons.arrow_drop_down,
+                                color: Theme.of(context).primaryColorDark,
+                              ),
+                            ),
+                            onChanged: (String? new_value){
+                              setState(() {
+                                _mois = new_value;
+                              });
+                            },
+                            items: <String>["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"]
+                                .map<DropdownMenuItem<String>>((value) {
+                              return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Tooltip(message: value, child: Center(child: Text(value, style: Theme.of(context).textTheme.headline6,)),));
+                            }).toList(),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(right: 5.0, left: 5.0),
+                          child: Ligne(color: Colors.grey,),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(right: 5.0, left: 5.0, bottom: 15),
+                          child: MyTextFieldForm(
+                            name: "Départ d'index",
+                            edit: false,
+                            value: "",
+                            onChanged: () => (value){
+                              setState(() {
+                                _depart = value;
+                              });
+                            },
+                            validator: () => (value){
+                              if(value.isEmpty){
+                                return "Veuillez entrer l'index de départ";
+                              }
+                            },
+                            iconData: Icons.note_alt_outlined,
+                            textInputType: TextInputType.number,
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(right: 5.0, left: 5.0, bottom: 5.0),
+                          child:MyTextFieldForm(
+                            name: "Fin d'index",
+                            edit: false,
+                            value: "",
+                            onChanged: () => (value){
+                              setState(() {
+                                _fin = value;
+                              });
+                            },
+                            validator: () => (value){
+                              if(value.isEmpty){
+                                return "Veuillez entrer la fin d'index!";
+                              }
+                            },
+                            iconData: Icons.note_alt,
+                            textInputType: TextInputType.number,
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(right: 5.0, left: 5.0, bottom: 5.0),
+                          child:MyTextFieldForm(
+                            name: "Montant du facture",
+                            edit: false,
+                            value: "",
+                            onChanged: () => (value){
+                              setState(() {
+                                _montant = value;
+                              });
+                            },
+                            validator: () => (value){
+                              if(value.isEmpty){
+                                return "Veuillez entrer le montant du facture!";
+                              }
+                            },
+                            iconData: Icons.note_alt,
+                            textInputType: TextInputType.number,
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(right: 1.0, left: 1.0),
+                          child: ListTile(
+                            onTap: () => _selectedDate(context),
+                            title: Text("Date d'aujourd'hui", style: Theme.of(context).textTheme.headline5,),
+                            subtitle: Text("${DateFormat.yMEd('fr').format(selectedDate!)}", style: Theme.of(context).textTheme.headline6,),
+                            trailing: IconButton(
+                              icon: Icon(Icons.date_range),
+                              onPressed: () => _selectedDate(context),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(right: 5.0, left: 5.0),
+                          child: Ligne(color: Colors.grey,),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 5),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                width: 163,
+                                child: Button(
+                                    onPressed: () => () => Navigator.pop(context),
+                                    name: "Annuler",
+                                    color: Colors.red
+                                ),
+                              ),
+                              Container(
+                                width: 163,
+                                child: Button(
+                                    onPressed: () => () => _ajouter_mois(),
+                                    name: "Valider",
+                                    color: Colors.blue),
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  )
+                ],
               ),
-              Padding(padding: EdgeInsets.only(top: 2)),
-              Card(
-                elevation: 5.0,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(right: 5.0, left: 5.0),
-                      child: DropdownButton<String>(
-                        value: _mois,
-                        underline: SizedBox(height: 0,),
-                        hint: Container(
-                          child: Text("Choisir le mois                                      "),
-                        ),
-                        icon: Container(
-                          child: Icon(
-                            Icons.arrow_drop_down,
-                            color: Colors.blueGrey,
-                          ),
-                        ),
-                        onChanged: (String? new_value){
-                          setState(() {
-                            _mois = new_value;
-                          });
-                        },
-                        items: <String>["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"]
-                            .map<DropdownMenuItem<String>>((value) {
-                          return DropdownMenuItem<String>(
-                              value: value,
-                              child: Tooltip(message: value, child: Container(margin: EdgeInsets.only(left: 4, right: 4),child: Text(value, style: TextStyle(color: Colors.blueGrey),),),));
-                        }).toList(),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(right: 5.0, left: 5.0),
-                      child: Ligne(color: Colors.grey,),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(right: 5.0, left: 5.0, bottom: 15),
-                      child: MyTextFieldForm(
-                        name: "Départ d'index",
-                        edit: false,
-                        value: "",
-                        onChanged: () => (value){
-                          setState(() {
-                            _depart = value;
-                          });
-                        },
-                        validator: () => (value){
-                          if(value.isEmpty){
-                            return "Veuillez entrer l'index de départ";
-                          }
-                        },
-                        iconData: Icons.note_alt_outlined,
-                        textInputType: TextInputType.number,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(right: 5.0, left: 5.0, bottom: 5.0),
-                      child:MyTextFieldForm(
-                        name: "Fin d'index",
-                        edit: false,
-                        value: "",
-                        onChanged: () => (value){
-                          setState(() {
-                            _fin = value;
-                          });
-                        },
-                        validator: () => (value){
-                          if(value.isEmpty){
-                            return "Veuillez entrer la fin d'index!";
-                          }
-                        },
-                        iconData: Icons.note_alt,
-                        textInputType: TextInputType.number,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(right: 5.0, left: 5.0, bottom: 5.0),
-                      child:MyTextFieldForm(
-                        name: "Montant du facture",
-                        edit: false,
-                        value: "",
-                        onChanged: () => (value){
-                          setState(() {
-                            _montant = value;
-                          });
-                        },
-                        validator: () => (value){
-                          if(value.isEmpty){
-                            return "Veuillez entrer le montant du facture!";
-                          }
-                        },
-                        iconData: Icons.note_alt,
-                        textInputType: TextInputType.number,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(right: 1.0, left: 1.0),
-                      child: ListTile(
-                        onTap: () => _selectedDate(context),
-                        title: Text("Date d'aujourd'hui", style: TextStyle(color: Colors.blueGrey, fontWeight: FontWeight.bold),),
-                        subtitle: Text("${DateFormat.yMEd('fr').format(selectedDate!)}"),
-                        trailing: IconButton(
-                          icon: Icon(Icons.date_range),
-                          onPressed: () => _selectedDate(context),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(right: 5.0, left: 5.0),
-                      child: Ligne(color: Colors.grey,),
-                    ),
-                    Container(
-                      margin: EdgeInsets.symmetric(horizontal: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Button(
-                              onPressed: () => () => Navigator.pop(context),
-                              name: "Annuler",
-                              color: Colors.red
-                          ),
-                          Button(
-                              onPressed: () => () => _ajouter_mois(),
-                              name: "Valider",
-                              color: Colors.blue),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              )
-            ],
+            ),
           ),
         ),
       ),
@@ -209,6 +219,7 @@ class _AjouterMoisState extends State<AjouterMois> {
       mois.ancien_index = _depart;
       mois.nouvel_index = _fin;
       mois.montant_mois = _montant;
+      mois.payer = false;
       mois.date_mois = selectedDate.toString();
       bool saveMois = await DbServices().saveMois(mois);
       if(saveMois == true){

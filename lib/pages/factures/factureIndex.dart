@@ -116,7 +116,6 @@ class FacturesState extends State<FacturesController>{
   Widget build(BuildContext context) {
 
     return Scaffold(
-      backgroundColor: _resultListIndex.length == 0 ? Colors.white : Colors.grey[300],
       appBar: AppBar(
         backgroundColor: Colors.green,
         title: Text("Factures"),
@@ -189,8 +188,8 @@ class FacturesState extends State<FacturesController>{
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                                   children: [
-                                    Icon(Icons.calendar_month, color: Colors.blueGrey, size: 30.0,),
-                                    Text("${DateFormat.yMMMMEEEEd('fr').format(DateTime.parse(date))}", style: TextStyle(color: Colors.grey, fontSize: 15.0))
+                                    Icon(Icons.calendar_month, color: Theme.of(context).primaryColorDark, size: 30.0,),
+                                    Text("${DateFormat.yMMMMEEEEd('fr').format(DateTime.parse(date))}", style: TextStyle(color: Theme.of(context).primaryColorDark, fontSize: 15.0))
                                   ],
                                 ),
                                 SizedBox(height: 5,),
@@ -202,19 +201,19 @@ class FacturesState extends State<FacturesController>{
                                     Column(
                                       children: [
                                         Text("Ancien Index", style: style.copyWith(color: Colors.green, fontSize: 15, fontWeight: FontWeight.bold),),
-                                        Text("${formatAmount(ancien_index_mois.toString())}", style: style.copyWith(color: Colors.grey, fontSize: 15, fontWeight: FontWeight.bold),),
+                                        Text("${formatAmount(ancien_index_mois.toString())}", style: Theme.of(context).textTheme.headline5),
                                       ],
                                     ),
                                     Column(
                                       children: [
                                         Text("Nouvel Index", style: style.copyWith(color: Colors.green, fontSize: 15, fontWeight: FontWeight.bold)),
-                                        Text("${formatAmount(nouvel_index_mois.toString())}", style: style.copyWith(color: Colors.grey, fontSize: 15, fontWeight: FontWeight.bold)),
+                                        Text("${formatAmount(nouvel_index_mois.toString())}", style: Theme.of(context).textTheme.headline5),
                                       ],
                                     ),
                                     Column(
                                       children: [
                                         Text("Consommé", style: style.copyWith(color: Colors.green, fontSize: 15, fontWeight: FontWeight.bold)),
-                                        Text("${consommer_mois!.toStringAsFixed(2)}", style: style.copyWith(color: Colors.grey, fontSize: 15, fontWeight: FontWeight.bold)),
+                                        Text("${consommer_mois!.toStringAsFixed(2)}", style: Theme.of(context).textTheme.headline5),
                                       ],
                                     ),
                                   ],
@@ -227,16 +226,16 @@ class FacturesState extends State<FacturesController>{
                                   children: [
                                     Column(
                                       children: [
-                                        Text("Total consommer : ", style: style.copyWith(color: Colors.green, fontSize: 15, fontWeight: FontWeight.bold)),
+                                        Text("Total consommer", style: style.copyWith(color: Colors.green, fontSize: 15, fontWeight: FontWeight.bold)),
                                         //                Text("${somme_index}", style: style.copyWith(color: Colors.grey, fontSize: 15, fontWeight: FontWeight.bold))
-                                        Text("${sommeIndex!.toStringAsFixed(2)}" , style: style.copyWith(color: Colors.blueGrey, fontSize: 15)),
+                                        Text("${sommeIndex!.toStringAsFixed(2)}" , style: Theme.of(context).textTheme.headline6),
                                       ],
                                     ),
                                     Column(
                                       children: [
-                                        Text("Reste compteur : ", style: style.copyWith(color: Colors.green, fontSize: 15, fontWeight: FontWeight.bold)),
+                                        Text("Reste compteur", style: style.copyWith(color: Colors.green, fontSize: 15, fontWeight: FontWeight.bold)),
                                         //                Text("${somme_index}", style: style.copyWith(color: Colors.grey, fontSize: 15, fontWeight: FontWeight.bold))
-                                        Text("${(consommer_mois - sommeIndex).toStringAsFixed(2)}", style: style.copyWith(color: Colors.blueGrey, fontSize: 15)),
+                                        Text("${(consommer_mois - sommeIndex).toStringAsFixed(2)}", style: Theme.of(context).textTheme.headline6),
                                       ],
                                     ),
                                   ],
@@ -247,8 +246,8 @@ class FacturesState extends State<FacturesController>{
                                   children: [
                                     Column(
                                       children: [
-                                        Text("Payer compteur : ", style: style.copyWith(color: Colors.green, fontSize: 15, fontWeight: FontWeight.bold)),
-                                        Text("${ formatAmount(((montant_mois * (consommer_mois - sommeIndex)) / consommer_mois ).toStringAsFixed(2)) }", style: style.copyWith(color: Colors.blueGrey, fontSize: 15)),
+                                        Text("Payer compteur", style: style.copyWith(color: Colors.green, fontSize: 15, fontWeight: FontWeight.bold)),
+                                        Text("${ formatAmount(((montant_mois * (consommer_mois - sommeIndex)) / consommer_mois ).toStringAsFixed(2)) }", style: Theme.of(context).textTheme.headline6),
                                       ],
                                     )
                                   ],
@@ -258,7 +257,7 @@ class FacturesState extends State<FacturesController>{
                                   children: [
                                     Expanded(child: Divider(color: Colors.blueGrey,)),
                                     SizedBox(width: 16),
-                                    Text("Détails des portes", style: style.copyWith(color: Colors.blueGrey, fontSize: 15, fontWeight: FontWeight.bold)),
+                                    Text("Détails des portes", style: Theme.of(context).textTheme.headline6),
                                     SizedBox(width: 16,),
                                     Expanded(child: Divider(color: Colors.blueGrey,)),
                                   ],
@@ -310,7 +309,7 @@ class FacturesState extends State<FacturesController>{
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text("Total en Ar", style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 15)),
-                                      Text("${formatAmount(montant_mois.toString())}", style: TextStyle(color: Colors.grey, fontSize: 15, fontWeight: FontWeight.bold)),
+                                      Text("${formatAmount(montant_mois.toString())}", style: Theme.of(context).textTheme.headline5),
                                       ]
                                   ),
                                 ),
@@ -321,7 +320,7 @@ class FacturesState extends State<FacturesController>{
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text("Total en Fmg", style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 15)),
-                                      Text("${formatAmount(montant_mois_fmg.toString())}", style: TextStyle(color: Colors.blueGrey, fontSize: 15, fontWeight: FontWeight.bold)),
+                                      Text("${formatAmount(montant_mois_fmg.toString())}", style: Theme.of(context).textTheme.headline5),
                                     ],
                                   ),
                                 )
@@ -353,15 +352,15 @@ class FacturesState extends State<FacturesController>{
   Widget ShowPortes({String? nom, String? porte, String? debut, String? fin, String? consommer, String? image, String? payer, String? compteur, String? payer_ar, String? payer_fmg, String? valide}){
     return  Container(
       margin: EdgeInsets.only(top: 5),
-      color: Colors.white,
+      color: Theme.of(context).primaryColorLight,
       child: Theme(
           data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
           child: ExpansionTile(
-            backgroundColor: Colors.white,
+            backgroundColor: Theme.of(context).primaryColorLight,
             title:  RichText(text: TextSpan(
                 children: [
                   TextSpan(text: "Portes : ", style: TextStyle(color: Colors.green)),
-                  TextSpan(text: "${porte}", style: TextStyle(color: Colors.blueGrey, fontSize: 20, fontWeight: FontWeight.bold)),
+                  TextSpan(text: "${porte}", style: Theme.of(context).textTheme.headline4),
                 ]
             )),
             leading: (image == "null")
@@ -405,7 +404,7 @@ class FacturesState extends State<FacturesController>{
       padding: EdgeInsets.only(top: 4),
       child:  RichText(text: TextSpan(
           text: "${name}",
-          style: TextStyle(color: Colors.blueGrey,),
+          style: TextStyle(color: Theme.of(context).primaryColorDark),
           children: [
             TextSpan(text: "${value}", style: TextStyle(color: Colors.grey)),
           ]

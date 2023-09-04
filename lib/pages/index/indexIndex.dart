@@ -75,7 +75,6 @@ class IndexState extends State<IndexController>{
   Widget build(BuildContext context) {
     getIndexsStream();
     return Scaffold(
-      backgroundColor: _resultListIndex.length == 0 ? Colors.white :  Colors.grey[300],
       appBar: AppBar(
         title: Text("Index Facture"),
         backgroundColor: Colors.green,

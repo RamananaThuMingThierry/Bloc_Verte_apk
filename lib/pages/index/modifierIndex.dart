@@ -37,7 +37,6 @@ class _ModifierIndexState extends State<ModifierIndex> {
         title: Text("Modifier un Index"),
         backgroundColor: Colors.green,
       ),
-      backgroundColor: Colors.grey[300],
       body: SingleChildScrollView(
         padding: EdgeInsets.all(2.0),
         child: Form(
@@ -51,7 +50,7 @@ class _ModifierIndexState extends State<ModifierIndex> {
                   height: 50.0,
                   width: double.infinity,
                   padding: EdgeInsets.only(top: 15.0),
-                  child: Text("Informations", textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey, fontSize: 18.0),),
+                  child: Text("Informations", textAlign: TextAlign.center, style: Theme.of(context).textTheme.headline4),
                 ),
               ),
               Padding(padding: EdgeInsets.only(top: 1)),
@@ -78,12 +77,12 @@ class _ModifierIndexState extends State<ModifierIndex> {
                         value: _mois,
                         underline: SizedBox(height: 0,),
                         hint: Container(
-                          child: Text("Choisir le mois                                            ", style: TextStyle(color: Colors.blueGrey),),
+                          child: Text("Choisir le mois                                            ", style: Theme.of(context).textTheme.headline5),
                         ),
                         icon: Container(
                           child: Icon(
                             Icons.arrow_drop_down,
-                            color: Colors.blueGrey,
+                            color: Theme.of(context).primaryColorDark,
                           ),
                         ),
                         onChanged: (String? new_value){
@@ -95,7 +94,7 @@ class _ModifierIndexState extends State<ModifierIndex> {
                             .map<DropdownMenuItem<String>>((value) {
                           return DropdownMenuItem<String>(
                               value: value,
-                              child: Tooltip(message: value, child: Container(margin: EdgeInsets.only(left: 4, right: 4),child: Text(value, style: TextStyle(color: Colors.blueGrey),),),));
+                              child: Tooltip(message: value, child: Center(child: Text(value, style: Theme.of(context).textTheme.headline6)),));
                         }).toList(),
                       ),
                     ),
@@ -116,12 +115,12 @@ class _ModifierIndexState extends State<ModifierIndex> {
                         value: _portes,
                         underline: SizedBox(height: 0,),
                         hint: Container(
-                          child: Text("Choisir le numéro de votre portes            ",style: TextStyle(color: Colors.blueGrey)),
+                          child: Text("Choisir le numéro de votre portes                   ",style: Theme.of(context).textTheme.headline5),
                         ),
                         icon: Container(
                           child: Icon(
                             Icons.arrow_drop_down,
-                            color: Colors.blueGrey,
+                            color: Theme.of(context).primaryColorDark,
                           ),
                         ),
                         onChanged: (String? new_value){
@@ -133,7 +132,7 @@ class _ModifierIndexState extends State<ModifierIndex> {
                             .map<DropdownMenuItem<String>>((value) {
                           return DropdownMenuItem<String>(
                               value: value,
-                              child: Tooltip(message: value, child: Container(margin: EdgeInsets.only(left: 4, right: 4),child: Text(value, style: TextStyle(color: Colors.blueGrey),),),));
+                              child: Tooltip(message: value, child: Center(child: Container(margin: EdgeInsets.only(left: 4, right: 4),child: Text(value, style: Theme.of(context).textTheme.headline6),)),));
                         }).toList(),
                       ),
                     ),

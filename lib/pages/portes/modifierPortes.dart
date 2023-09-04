@@ -7,6 +7,7 @@ import 'package:bv/widgets/button.dart';
 import 'package:bv/widgets/myTextFieldForm.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ModifierPortes extends StatefulWidget{
@@ -27,9 +28,11 @@ class ModifierPortesState extends State<ModifierPortes>{
   String? nom;
   String? numero_porte;
   String? contact;
-  File? images;
   bool? existe;
   String? image_update;
+  File? imageFiles;
+  File? selectedImage;
+  CroppedFile? croppedImage;
   final _key = GlobalKey<FormState>();
 
   @override
@@ -48,7 +51,6 @@ class ModifierPortesState extends State<ModifierPortes>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
       appBar: AppBar(
         backgroundColor: Colors.green,
         centerTitle: true,
@@ -68,7 +70,7 @@ class ModifierPortesState extends State<ModifierPortes>{
                     child: Container(
                       width: double.infinity,
                       padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 15),
-                      child: Text("Informations", textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey, fontSize: 18.0),),
+                      child: Text("Informations", textAlign: TextAlign.center, style: Theme.of(context).textTheme.headline4),
                     ),
                   ),
                   Card(
@@ -97,11 +99,6 @@ class ModifierPortesState extends State<ModifierPortes>{
                             ),
                             IconButton(
                                 onPressed: (){
-                                    // if(image_update != null){
-                                    //   setState(() {
-                                    //     image_update = null;
-                                    //   });
-                                    // }
                                     if(existe == false){
                                       setState(() {
                                         existe = true;
@@ -131,7 +128,7 @@ class ModifierPortesState extends State<ModifierPortes>{
                               validator: () => (value){
                                 if(value!.isEmpty){
                                   return "Veuillez saisir le numéro du porte!";
-                                }else if(int.parse(value) < 1 || int.parse(value) > 11){
+                                }else if(value.toString().length < 1 || value.toString().length > 11){
                                   return "Le numéro du porte doit-être compris entre 1 et 11!";
                                 }
                               },
@@ -160,25 +157,42 @@ class ModifierPortesState extends State<ModifierPortes>{
                         ),
                         Padding(
                           padding: EdgeInsets.only(right: 5.0, left: 5.0, bottom: 10.0),
-                          child:MyTextFieldForm(
-                              edit: true,
-                              value: contact! ?? "",
-                              name: "Contact",
-                              onChanged: () => (value){
-                                setState(() {
-                                  contact = value;
-                                });
-                              },
-                              validator: () => (value){
-                                if(value!.isEmpty){
-                                  return "Veuillez saisir votre contact!";
-                                }else if(int.parse(value) < 11){
-                                  return "Votre numéro doit être comporte par 10 chiffres!";
-                                }
-                              },
-                              iconData: Icons.phone_outlined,
-                              textInputType: TextInputType.number),
-                        ),
+                          child:
+                          TextFormField(
+                            initialValue: contact,
+                            maxLength: 10,
+                            onChanged: (value){
+                              setState(() {
+                                contact = value;
+                              });
+                            },
+                            style: Theme.of(context).textTheme.headline6,
+                            decoration: InputDecoration(
+                              hintText: "Contact",
+                              suffixIcon: Icon(Icons.phone),
+                              hintStyle: Theme.of(context).textTheme.headline6,
+                              suffixIconColor: Colors.grey,
+                              enabledBorder : UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Colors.grey
+                                ),
+                              ),
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Colors.green,
+                                ),
+                              ),
+                            ),
+                            validator: (value){
+                              if(value!.isEmpty){
+                                return "Veuillez saisir votre contact!";
+                              }else if(value.length > 11){
+                                return "Votre numéro doit être comporte par 10 chiffres!";
+                              }
+                            },
+                            keyboardType: TextInputType.number,
+                          )
+                          ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 5),
                           child: Row(
@@ -247,12 +261,49 @@ class ModifierPortesState extends State<ModifierPortes>{
 
   Future getImage(ImageSource source) async{
     final newImage = await ImagePicker().pickImage(source: source);
-    setState(() {
-      image_update = null;
-      image = newImage!.path;
-      images = File(newImage!.path);
-    });
+    if(newImage != null){
+      final File image = File(newImage!.path);
+      cropImage(image);
+    }
   }
+
+  Future cropImage(File imageR) async {
+    CroppedFile? croppedFile = await ImageCropper().cropImage(
+      sourcePath: imageR.path,
+      aspectRatioPresets: [
+        CropAspectRatioPreset.square,
+      ],
+      uiSettings: [
+        AndroidUiSettings(
+            toolbarTitle: 'Recadrez l\'image',
+            toolbarColor: Colors.green,
+            toolbarWidgetColor: Colors.white,
+            activeControlsWidgetColor: Colors.green,
+            hideBottomControls: false,
+            cropGridColumnCount: 3,
+            cropGridRowCount: 3,
+            initAspectRatio: CropAspectRatioPreset.square,
+            lockAspectRatio: true),
+        IOSUiSettings(
+          title: 'Cropper',
+        ),
+        WebUiSettings(
+          context: context,
+        ),
+      ],
+    );
+    if (croppedFile != null) {
+      print("******************************************************************************** ${croppedFile}");
+      setState(() {
+        image_update = null;
+        croppedImage = croppedFile;
+        image = croppedFile.path;
+        imageFiles = File(croppedFile!.path);
+      });
+      print("******************************************************************************** ${croppedImage}");
+    }
+  }
+
 
   TextField textField(TypeTextField type, String label){
     return TextField(

@@ -48,7 +48,6 @@ class _ShowUsersState extends State<ShowUsers> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
       appBar: AppBar(
         title: Text("A propos"),
         backgroundColor: Colors.green,
@@ -71,7 +70,7 @@ class _ShowUsersState extends State<ShowUsers> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text("Informations", style: TextStyle(color: Colors.blueGrey, fontSize: 20, fontWeight: FontWeight.bold),),
+                          Text("Informations", style: Theme.of(context).textTheme.headline4),
                         ],
                       )),
                 ),
@@ -111,7 +110,7 @@ class _ShowUsersState extends State<ShowUsers> {
                               ),
                             Column(
                               children: [
-                                Text("${pseudo}", style: style.copyWith(color: Colors.blueGrey, fontWeight: FontWeight.bold, fontSize: 15),),
+                                Text("${pseudo}", style: Theme.of(context).textTheme.headline4),
                               ],
                             )
                           ],
@@ -151,7 +150,7 @@ class _ShowUsersState extends State<ShowUsers> {
                               child:  RichText(text: TextSpan(
                                   children: [
                                     WidgetSpan(child: Icon(Icons.update, color: Colors.blue, size: 18)),
-                                    TextSpan(text: "   Modifier", style: style.copyWith(fontWeight: FontWeight.bold, color: Colors.blueGrey)),
+                                    TextSpan(text: "   Modifier", style: Theme.of(context).textTheme.headline5),
                                   ]
                               ),
                               ),),
@@ -163,7 +162,7 @@ class _ShowUsersState extends State<ShowUsers> {
                               child:  RichText(text: TextSpan(
                                   children: [
                                     WidgetSpan(child: Icon(Icons.delete, color: Colors.red, size: 18,)),
-                                    TextSpan(text: "   Supprimer", style: TextStyle(color: Colors.blueGrey)),
+                                    TextSpan(text: "   Supprimer", style: TextStyle(color: Theme.of(context).primaryColorDark)),
                                   ]
                               ),
                               ),),
@@ -205,25 +204,21 @@ class _ShowUsersState extends State<ShowUsers> {
             ),
             contentPadding: EdgeInsets.symmetric(horizontal: 15),
             actions: [
-              Card(
-                shape: Border(top: BorderSide(color: Colors.grey, width: 1)),
-                elevation: 0,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    TextButton(
-                        onPressed: (){
-                          Navigator.pop(context);
-                          print("Annuler");
-                        },
-                        child: Text("Non", style: TextStyle(color: Colors.redAccent),)),
-                    Text("|", style: TextStyle(color: Colors.green, fontSize: 25, fontWeight: FontWeight.bold),),
-                    TextButton(
-                        onPressed: (){
-                          Navigator.pop(context);
-                        }, child: Text("Oui",style: TextStyle(color: Colors.blueGrey),)),
-                  ],
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                      onPressed: (){
+                        Navigator.pop(context);
+                        print("Annuler");
+                      },
+                      child: Text("Non", style: TextStyle(color: Colors.redAccent),)),
+                  Text("|", style: TextStyle(color: Colors.green, fontSize: 25, fontWeight: FontWeight.bold),),
+                  TextButton(
+                      onPressed: (){
+                        Navigator.pop(context);
+                      }, child: Text("Oui",style: TextStyle(color: Theme.of(context).primaryColorDark),)),
+                ],
               )
             ],
           );
@@ -238,7 +233,7 @@ class _ShowUsersState extends State<ShowUsers> {
         children: [
           Icon(iconData, color: Colors.green,),
           SizedBox(width: 5,),
-          Text("${value}", style: style.copyWith(color: Colors.blueGrey, fontSize: 15, fontWeight: FontWeight.bold),),
+          Text("${value}", style: Theme.of(context).textTheme.headline5),
         ],
       ),
     );

@@ -60,7 +60,6 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
       key: _key,
       appBar: AppBar(
@@ -184,7 +183,7 @@ class _ProfileState extends State<Profile> {
                                         return "Veuillez saisir votre nom!";
                                       }
                                     },
-                                  style: TextStyle(color: Colors.blueGrey),
+                                  style: Theme.of(context).textTheme.headline6,
                                   onFieldSubmitted: (arg){},
                                   decoration: InputDecoration(
                                     hintText: "${pseudo}",
@@ -197,7 +196,7 @@ class _ProfileState extends State<Profile> {
                                 SizedBox(height: 10,),
                                 TextTitre(name: "Email"),
                                 TextFormField(
-                                  style: TextStyle(color: Colors.blueGrey),
+                                  style: Theme.of(context).textTheme.headline6,
                                   onFieldSubmitted: (arg){},
                                   decoration: InputDecoration(
                                     hintText: "${email}",
@@ -224,6 +223,7 @@ class _ProfileState extends State<Profile> {
                                 SizedBox(height: 10,),
                                 TextTitre(name: "Genre"),
                                 Card(
+                                  color: Theme.of(context).backgroundColor,
                                   elevation: 0,
                                   shape: Border(bottom: BorderSide(width: 1, color: Colors.grey)),
                                   child: Container(
@@ -234,7 +234,7 @@ class _ProfileState extends State<Profile> {
                                         DropdownButtonHideUnderline(
                                           child: DropdownButton(
                                             borderRadius: BorderRadius.circular(5),
-                                            hint: Text(" Genre                                                                ", style: TextStyle(color: Colors.blueGrey),),
+                                            hint: Text(" Genre                                                                ", style: Theme.of(context).textTheme.headline6),
                                             onChanged: (String? value){
                                               setState(() {
                                                 genre = value;
@@ -247,7 +247,7 @@ class _ProfileState extends State<Profile> {
                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
                                                   Icon(Icons.man,color: Colors.blueGrey,size: 25,),
-                                                  Text("     Homme", style: TextStyle(color: Colors.blueGrey),),
+                                                  Text("     Homme", style: TextStyle(color: Colors.blueGrey)),
                                                 ],)
                                               ),
                                               DropdownMenuItem(value: "Femme", child: Row(
@@ -269,11 +269,11 @@ class _ProfileState extends State<Profile> {
                                 TextFormField(
                                   keyboardType: TextInputType.number,
                                   initialValue: "${contact ?? "Aucun"}",
-                                  style: TextStyle(color: Colors.blueGrey),
+                                  style: Theme.of(context).textTheme.headline6,
                                   onFieldSubmitted: (arg){},
                                   decoration: InputDecoration(
                                     hintText: "${contact ?? "Aucun"}",
-                                    hintStyle: TextStyle(fontSize: 15, color: Colors.grey),
+                                    hintStyle: Theme.of(context).textTheme.headline6,
                                     prefixIcon: Icon(Icons.phone, color: Colors.blueGrey, size: 20,),
                                   ),
                                   textInputAction: TextInputAction.search,
@@ -293,7 +293,7 @@ class _ProfileState extends State<Profile> {
                                 TextTitre(name: "Adresse"),
                                 TextFormField(
                                    initialValue: "${adresse ?? "Aucun"}",
-                                    style: TextStyle(color: Colors.blueGrey),
+                                    style: Theme.of(context).textTheme.headline6,
                                     onFieldSubmitted: (arg){},
                                     decoration: InputDecoration(
                                       hintText: "${adresse ?? "Aucun"}",
@@ -318,11 +318,11 @@ class _ProfileState extends State<Profile> {
                                 TextFormField(
                                   enabled: false,
                                   initialValue: "${roles}",
-                                  style: TextStyle(color: Colors.blueGrey),
+                                  style: Theme.of(context).textTheme.headline6,
                                   onFieldSubmitted: (arg){},
                                   decoration: InputDecoration(
                                     hintText: "${roles}",
-                                    hintStyle: TextStyle(fontSize: 15, color: Colors.grey),
+                                    hintStyle: Theme.of(context).textTheme.headline6,
                                     prefixIcon: Icon( roles == "Administrateurs" ? Icons.key : Icons.key_off, color: Colors.blueGrey, size: 20,),
                                   ),
                                   textInputAction: TextInputAction.search,
@@ -343,22 +343,22 @@ class _ProfileState extends State<Profile> {
                             child: Column(
                               children: [
                                 TextTitre(name: "Pseudo"),
-                                CardText(iconData: Icons.account_box_rounded, value: "${pseudo}"),
+                                CardText(context, iconData: Icons.account_box_rounded, value: "${pseudo}"),
                                 SizedBox(height: 10,),
                                 TextTitre(name: "Email"),
-                                CardText(iconData: Icons.mail, value: "${email}"),
+                                CardText(context, iconData: Icons.mail, value: "${email}"),
                                 SizedBox(height: 10,),
                                 TextTitre(name: "Genre"),
-                                CardText(iconData: Icons.person, value: "${genre ?? "Néant"}"),
+                                CardText(context,iconData: Icons.person, value: "${genre ?? "Néant"}"),
                                 SizedBox(height: 10,),
                                 TextTitre(name: "Contact"),
-                                CardText(iconData: Icons.phone, value: "${contact}"),
+                                CardText(context,iconData: Icons.phone, value: "${contact}"),
                                 SizedBox(height: 10,),
                                 TextTitre(name: "Adresse"),
-                                CardText(iconData: Icons.local_library, value: "${adresse ?? "Néant"}"),
+                                CardText(context,iconData: Icons.local_library, value: "${adresse ?? "Néant"}"),
                                 SizedBox(height: 10,),
                                 TextTitre(name: "Rôles"),
-                                CardText(iconData: roles == "Administrateurs" ? Icons.key : Icons.key_off , value: "${roles}"),
+                                CardText(context,iconData: roles == "Administrateurs" ? Icons.key : Icons.key_off , value: "${roles}"),
                               ],
                             ),
                           ),

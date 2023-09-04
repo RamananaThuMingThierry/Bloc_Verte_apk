@@ -14,12 +14,12 @@ class MyTextFieldForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return   TextFormField(
-      style: TextStyle(color: Colors.blueGrey),
+      style: Theme.of(context).textTheme.headline6,
       initialValue: edit ? value : null,
       decoration: InputDecoration(
         hintText: name,
         suffixIcon: Icon(iconData),
-        hintStyle: TextStyle(color: Colors.blueGrey),
+        hintStyle: Theme.of(context).textTheme.headline6,
         suffixIconColor: Colors.grey,
         enabledBorder : UnderlineInputBorder(
           borderSide: BorderSide(

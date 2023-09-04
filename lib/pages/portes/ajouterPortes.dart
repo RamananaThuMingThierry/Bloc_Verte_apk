@@ -6,6 +6,7 @@ import 'package:bv/utils/loading.dart';
 import 'package:bv/widgets/button.dart';
 import 'package:bv/widgets/myTextFieldForm.dart';
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AjouterPortes extends StatefulWidget{
@@ -21,7 +22,8 @@ class AjouterPortesState extends State<AjouterPortes>{
   String? nom;
   String? numero_porte;
   String? contact;
-  File? images;
+  File? imageFiles;
+  CroppedFile? croppedImage;
   final _key = GlobalKey<FormState>();
 
   @override
@@ -60,9 +62,11 @@ class AjouterPortesState extends State<AjouterPortes>{
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    (image == null)
-                        ? Image.asset("assets/no_image.jpg")
-                        : Image.file(File(image!)),
+                    // (image == null)
+                    //     ? Image.asset("assets/no_image.jpg")
+                    //     :
+                    //       (selectedImage != null) ?  Image.file(selectedImage!) : Image.asset("assets/no_image.jpg"),
+                          (croppedImage != null) ? Image.file(File(croppedImage!.path)) : Image.asset("assets/no_image.jpg"),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -123,24 +127,40 @@ class AjouterPortesState extends State<AjouterPortes>{
                     ),
                     Padding(
                       padding: EdgeInsets.only(right: 5.0, left: 5.0, bottom: 10.0),
-                      child:MyTextFieldForm(
-                          edit: false,
-                          value: "",
-                          name: "Contact",
-                          onChanged: () => (value){
-                            setState(() {
-                              contact = value;
-                            });
-                          },
-                          validator: () => (value){
-                            if(value!.isEmpty){
-                              return "Veuillez entrer votre contact!";
-                            }else if(int.parse(value) < 11){
-                              return "Votre numéro doit être comporte par 10 chiffres!";
-                            }
-                          },
-                          iconData: Icons.phone,
-                          textInputType: TextInputType.phone),
+                      child:TextFormField(
+                        initialValue: contact,
+                        maxLength: 10,
+                        onChanged: (value){
+                          setState(() {
+                            contact = value;
+                          });
+                        },
+                        style: Theme.of(context).textTheme.headline6,
+                        decoration: InputDecoration(
+                          hintText: "Contact",
+                          suffixIcon: Icon(Icons.phone),
+                          hintStyle: Theme.of(context).textTheme.headline6,
+                          suffixIconColor: Colors.grey,
+                          enabledBorder : UnderlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Colors.grey
+                            ),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.green,
+                            ),
+                          ),
+                        ),
+                        validator: (value){
+                          if(value!.isEmpty){
+                            return "Veuillez saisir votre contact!";
+                          }else if(value.length > 11){
+                            return "Votre numéro doit être comporte par 10 chiffres!";
+                          }
+                        },
+                        keyboardType: TextInputType.number,
+                      )
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -214,11 +234,48 @@ class AjouterPortesState extends State<AjouterPortes>{
 
   Future getImage(ImageSource source) async{
     final newImage = await ImagePicker().pickImage(source: source);
-    setState(() {
-      image = newImage!.path;
-      images = File(newImage!.path);
-    });
+    if(newImage != null){
+      final File image = File(newImage!.path);
+      cropImage(image); // Call the image cropping function
+    }
   }
+
+  Future cropImage(File imageR) async {
+    CroppedFile? croppedFile = await ImageCropper().cropImage(
+      sourcePath: imageR.path,
+      aspectRatioPresets: [
+        CropAspectRatioPreset.square,
+      ],
+      uiSettings: [
+        AndroidUiSettings(
+            toolbarTitle: 'Recadrez l\'image',
+            toolbarColor: Colors.green,
+            toolbarWidgetColor: Colors.white,
+            activeControlsWidgetColor: Colors.green,
+            hideBottomControls: false,
+            cropGridColumnCount: 3,
+            cropGridRowCount: 3,
+            initAspectRatio: CropAspectRatioPreset.square,
+            lockAspectRatio: true),
+        IOSUiSettings(
+          title: 'Cropper',
+        ),
+        WebUiSettings(
+          context: context,
+        ),
+      ],
+    );
+    if (croppedFile != null) {
+      print("******************************************************************************** ${croppedFile}");
+      setState(() {
+        croppedImage = croppedFile;
+        image = croppedFile.path;
+        imageFiles = File(croppedFile!.path);
+      });
+      print("******************************************************************************** ${croppedImage}");
+    }
+  }
+
 
   TextField textField(TypeTextField type, String label){
     return TextField(

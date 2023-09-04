@@ -104,7 +104,6 @@ class _UtilisateursState extends State<Utilisateurs> {
     getUsersStream();
 
     return Scaffold(
-        backgroundColor: _resultList.length == 0 ? Colors.white : Colors.grey[300],
         appBar: AppBar(
         title: Text("Utilisateurs"),
         backgroundColor: Colors.green,
@@ -122,16 +121,16 @@ class _UtilisateursState extends State<Utilisateurs> {
                 child: Container(
                   padding: EdgeInsets.symmetric(vertical: 5),
                   child: TextFormField(
-                    style: TextStyle(color: Colors.blueGrey),
+                    style: TextStyle(color: Theme.of(context).primaryColorDark),
                     controller: _searchController,
                     onFieldSubmitted: (arg){},
                     decoration: InputDecoration(
                       enabledBorder: InputBorder.none,
                       focusedBorder: InputBorder.none,
-                      suffixIcon: Icon(Icons.account_box_rounded, color: Colors.blueGrey,),
+                      suffixIcon: Icon(Icons.account_box_rounded, color: Theme.of(context).primaryColorDark),
                       hintText: "Recherche",
-                      hintStyle: TextStyle(fontSize: 15, color: Colors.blueGrey),
-                      prefixIcon: Icon(Icons.search, color: Colors.blueGrey, size: 20,),
+                      hintStyle: Theme.of(context).textTheme.headline6,
+                      prefixIcon: Icon(Icons.search, color: Theme.of(context).primaryColorDark, size: 20,),
                     ),
                     textInputAction: TextInputAction.search,
                     textAlignVertical: TextAlignVertical.center,
@@ -194,7 +193,7 @@ class _UtilisateursState extends State<Utilisateurs> {
                                 ),
                               ),
                         //              backgroundImage: (portesPersonnes.image == null) ? Image.asset("assets/photo.png").image : Image.network(portesPersonnes!.image!).image),
-                        title: Text("${pseudo}", maxLines: 1, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey), overflow: TextOverflow.ellipsis,),
+                        title: Text("${pseudo}", maxLines: 1, style: Theme.of(context).textTheme.headline5, overflow: TextOverflow.ellipsis,),
                         subtitle: Container(
                           margin: EdgeInsets.only(top: 4.0),
                           child: Text("${email}", style: TextStyle(color: Colors.grey),overflow: TextOverflow.ellipsis,),
