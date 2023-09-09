@@ -89,7 +89,7 @@ class ModifierPortesState extends State<ModifierPortes>{
                                     errorWidget: (context, url, error) => Icon(Icons.error), // Widget d'erreur affiché si l'image ne peut pas être chargée
                                     ),
                                   )
-                                : Image.file(File(image!)),
+                                : (croppedImage == null) ? Image.asset("assets/no_image.jpg") : Image.file(File(croppedImage!.path)),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
@@ -226,7 +226,7 @@ class ModifierPortesState extends State<ModifierPortes>{
     if(_formkey.validate()){
       var numero_porte_existe = await DbServices().recupererNumeroPortes(numero_porte!);
       loading(context);
-      final identifiant = await DbServices().countPortes();
+     // final identifiant = await DbServices().countPortes();
        if(numero_porte_existe != null){
          if(numero_porte_existe['numero_porte'] != data!.numero_porte){
            Navigator.pop(context);
@@ -263,6 +263,9 @@ class ModifierPortesState extends State<ModifierPortes>{
     final newImage = await ImagePicker().pickImage(source: source);
     if(newImage != null){
       final File image = File(newImage!.path);
+      setState(() {
+        image_update = null;
+      });
       cropImage(image);
     }
   }
@@ -295,7 +298,6 @@ class ModifierPortesState extends State<ModifierPortes>{
     if (croppedFile != null) {
       print("******************************************************************************** ${croppedFile}");
       setState(() {
-        image_update = null;
         croppedImage = croppedFile;
         image = croppedFile.path;
         imageFiles = File(croppedFile!.path);

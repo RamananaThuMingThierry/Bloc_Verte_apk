@@ -38,28 +38,36 @@ class _ShowChatsState extends State<ShowChats> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                         Text("Nom : ", style: style.copyWith(color: Colors.green, fontSize: 15, fontWeight: FontWeight.bold),),
-                         Text("${widget.c.nom}", style: style.copyWith(color: Colors.blueGrey, fontSize: 15, fontWeight: FontWeight.bold),),
+                         Text("Nom", style: style.copyWith(color: Colors.green, fontSize: 15, fontWeight: FontWeight.bold),),
+                         Icon(Icons.person, color: Colors.green,)
                       ],
                     ),
-                    Ligne(color: Colors.green),
+                    SizedBox(height: 5,),
                     Row(
                       children: [
-                        Text("Adrese email : ", style: style.copyWith(color: Colors.green, fontSize: 15, fontWeight: FontWeight.bold)),
-                      ],
-                    ),
-                    SizedBox(height: 4,),
-                    Row(
-                      children: [
-                        Text("${widget.c.email}", style: style.copyWith(color: Colors.blueGrey, fontSize: 15),),
+                        Text("${widget.c.nom}", style: Theme.of(context).textTheme.headline5),
                       ],
                     ),
                     Ligne(color: Colors.green),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("Contact : ", style: style.copyWith(color: Colors.green, fontSize: 15, fontWeight: FontWeight.bold),),
-                        Text("${widget.c.contact}", style: style.copyWith(color: Colors.blueGrey, fontSize: 15, fontWeight: FontWeight.bold),),
+                        Text("Adrese e-mail", style: style.copyWith(color: Colors.green, fontSize: 15, fontWeight: FontWeight.bold)),
+                        Icon(Icons.mail, color: Colors.green,)
+                      ],
+                    ),
+                    SizedBox(height: 4,),
+                    Row(
+                      children: [
+                        Text("${widget.c.email}", style: Theme.of(context).textTheme.headline6),
+                      ],
+                    ),
+                    Ligne(color: Colors.green),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Contact", style: style.copyWith(color: Colors.green, fontSize: 15, fontWeight: FontWeight.bold),),
+                        Text("${widget.c.contact}", style: Theme.of(context).textTheme.headline5),
                       ],
                     ),
                     Row(

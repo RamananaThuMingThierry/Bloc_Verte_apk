@@ -3,12 +3,23 @@ import 'dart:math';
 
 import 'package:bv/widgets/ligne_horizontale.dart';
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
-class GetImage extends StatelessWidget{
-  // Déclaration des variables
+class GetImage extends StatefulWidget{
+  @override
+  State<GetImage> createState() => _GetImageState();
+}
 
+class _GetImageState extends State<GetImage> {
+  // Déclaration des variables
   final picker = ImagePicker();
+
+  File? imageFiles;
+  String? image;
+  File? selectedImage;
+
+  CroppedFile? croppedImage;
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +65,12 @@ class GetImage extends StatelessWidget{
                 child: IconButton(
                   onPressed: () async{
                     final result = await picker.getImage(source: ImageSource.gallery);
-                    Navigator.of(context).pop(File(result!.path));
+                    if(result != null){
+                      // final File imageR = File(result!.path);
+                      // cropImage(imageR);
+                      // Navigator.of(context).pop(File(image!));
+                      Navigator.of(context).pop(File(result!.path));
+                    }
                   },
                   icon: Icon(Icons.photo_library, color: Colors.green,),
                 ),
@@ -64,5 +80,41 @@ class GetImage extends StatelessWidget{
         ],
       ),
     );
+  }
+
+  Future cropImage(File imageR) async {
+    CroppedFile? croppedFile = await ImageCropper().cropImage(
+      sourcePath: imageR.path,
+      aspectRatioPresets: [
+        CropAspectRatioPreset.square,
+      ],
+      uiSettings: [
+        AndroidUiSettings(
+            toolbarTitle: 'Recadrez l\'image',
+            toolbarColor: Colors.green,
+            toolbarWidgetColor: Colors.white,
+            activeControlsWidgetColor: Colors.green,
+            hideBottomControls: false,
+            cropGridColumnCount: 3,
+            cropGridRowCount: 3,
+            initAspectRatio: CropAspectRatioPreset.square,
+            lockAspectRatio: true),
+        IOSUiSettings(
+          title: 'Cropper',
+        ),
+        WebUiSettings(
+          context: context,
+        ),
+      ],
+    );
+    if (croppedFile != null) {
+      print("******************************************************************************** ${croppedFile}");
+      setState(() {
+        croppedImage = croppedFile;
+        image = croppedFile.path;
+        imageFiles = File(croppedFile!.path);
+      });
+      print("******************************************************************************** ${croppedImage}");
+    }
   }
 }

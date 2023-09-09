@@ -75,18 +75,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return
-      (userm == null) ? Container(
-        color: Colors.white,
-        child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SpinKitCircle(
-            color: Colors.green,
-            size: 50,
-          ),
-        ],
-      ),
-    ) :
       Scaffold(
       key: _key,
       appBar: AppBar(
@@ -111,7 +99,8 @@ class _HomePageState extends State<HomePage> {
           IconButton(onPressed: (){}, icon: Icon(Icons.notifications_none, color: Colors.white,)),
         ],
       ),
-      drawer: ClipPath(
+      drawer: userm == null ? SizedBox():
+        ClipPath(
         clipBehavior: Clip.antiAliasWithSaveLayer,
         clipper: OvalRightBorderClipper(),
         child: Drawer(
@@ -174,7 +163,20 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-      body: Center(
+      body:   (userm == null) ? Container(
+        color: Colors.white,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("Veuillez patientez", style: GoogleFonts.roboto(fontSize: 17, color: Colors.green),),
+            SizedBox(height: 10,),
+            SpinKitCircle(
+              color: Colors.green,
+              size: 50,
+            ),
+          ],
+        ),
+      ) : Center(
         child: GridView.builder(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
             itemCount: factures.length,

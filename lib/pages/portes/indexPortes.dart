@@ -30,8 +30,6 @@ class PortesController extends StatefulWidget{
 
 class PortesState extends State<PortesController>{
   UserM? utilisateurs;
-  var connectionStatus;
-  late InternetConnectionChecker connectionChecker;
   // Déclarations des variables
   String? nom, image, contact, numero;
 
@@ -92,16 +90,6 @@ class PortesState extends State<PortesController>{
     getPortesStream();
     utilisateurs = widget.users;
     _searchController.addListener(_onSearchChanged);
-    connectionChecker = InternetConnectionChecker();
-    connectionChecker.onStatusChange.listen((status) {
-      setState(() {
-        connectionStatus = status.toString();
-      });
-      if (connectionStatus ==
-          InternetConnectionStatus.disconnected.toString()) {
-          Message(context);
-      }
-    });
   }
 
   @override
@@ -165,60 +153,63 @@ class PortesState extends State<PortesController>{
             ),),
           )
               :
-          Expanded(child:  ListView.builder(
-              itemCount: _resultList!.length,
-              itemBuilder: (context, i){
-                Portes p = _resultList[i];
-                nom = p.nom;
-                image = p.image;
-                contact = p.contact;
-                numero = p.numero_porte;
-                return p == null ?
-                DonneesVide()
-                    :
-                Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 2),
-                      child: Card(
-                        shape: Border(left: BorderSide(color: Colors.green, width: 5)),
-                        elevation: 5.0,
-                        child: ListTile(
-                          onTap: () => voirPortes(p),
-                          trailing: RichText(
-                            text: TextSpan(
-                              children: [
-                                TextSpan(text : "${numero}", style: Theme.of(context).textTheme.headline4),
-                                WidgetSpan(child: Icon(Icons.door_front_door_outlined, color: Colors.grey,),),
-                              ],
-                            ),
-                          ),
-                          leading: (image == null)
-                              ?  CircleAvatar(
-                              foregroundColor: Colors.green, radius: 20.0,
-                              backgroundImage: Image.asset("assets/photo.png").image)
-                              :  CircleAvatar(
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child:  CachedNetworkImage(
-                                width: 200,
-                                height: 200,
-                                fit: BoxFit.cover,
-                                imageUrl: image!,
-                                placeholder: (context, url) => CircularProgressIndicator(), // Widget de chargement affiché pendant le chargement de l'image
-                                errorWidget: (context, url, error) => Icon(Icons.error), // Widget d'erreur affiché si l'image ne peut pas être chargée
+          Expanded(child:  RefreshIndicator(
+            onRefresh: () => getPortesStream(),
+            child: ListView.builder(
+                itemCount: _resultList!.length,
+                itemBuilder: (context, i){
+                  Portes p = _resultList[i];
+                  nom = p.nom;
+                  image = p.image;
+                  contact = p.contact;
+                  numero = p.numero_porte;
+                  return p == null ?
+                  DonneesVide()
+                      :
+                  Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 2),
+                        child: Card(
+                          shape: Border(left: BorderSide(color: Colors.green, width: 5)),
+                          elevation: 5.0,
+                          child: ListTile(
+                            onTap: () => voirPortes(p),
+                            trailing: RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(text : "${numero}", style: Theme.of(context).textTheme.headline4),
+                                  WidgetSpan(child: Icon(Icons.door_front_door_outlined, color: Colors.grey,),),
+                                ],
                               ),
                             ),
+                            leading: (image == null)
+                                ?  CircleAvatar(
+                                foregroundColor: Colors.green, radius: 20.0,
+                                backgroundImage: Image.asset("assets/photo.png").image)
+                                :  CircleAvatar(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child:  CachedNetworkImage(
+                                  width: 200,
+                                  height: 200,
+                                  fit: BoxFit.cover,
+                                  imageUrl: image!,
+                                  placeholder: (context, url) => CircularProgressIndicator(), // Widget de chargement affiché pendant le chargement de l'image
+                                  errorWidget: (context, url, error) => Icon(Icons.error), // Widget d'erreur affiché si l'image ne peut pas être chargée
+                                ),
+                              ),
+                            ),
+                            //              backgroundImage: (portesPersonnes.image == null) ? Image.asset("assets/photo.png").image : Image.network(portesPersonnes!.image!).image),
+                            title: Text("${nom}", maxLines: 1, style: Theme.of(context).textTheme.headline6, overflow: TextOverflow.ellipsis,),
+                            subtitle: Container(
+                              margin: EdgeInsets.only(top: 4.0),
+                              child: Text("${contact}", style: TextStyle(color: Colors.grey),),
+                            ),
+                            //trailing: IconButton(icon: Icon(Icons.navigate_next_rounded),onPressed: () => print(portesPersonnes.nom_personne),),
                           ),
-                          //              backgroundImage: (portesPersonnes.image == null) ? Image.asset("assets/photo.png").image : Image.network(portesPersonnes!.image!).image),
-                          title: Text("${nom}", maxLines: 1, style: Theme.of(context).textTheme.headline6, overflow: TextOverflow.ellipsis,),
-                          subtitle: Container(
-                            margin: EdgeInsets.only(top: 4.0),
-                            child: Text("${contact}", style: TextStyle(color: Colors.grey),),
-                          ),
-                          //trailing: IconButton(icon: Icon(Icons.navigate_next_rounded),onPressed: () => print(portesPersonnes.nom_personne),),
                         ),
-                      ),
-                    );
-              }),),
+                      );
+                }),
+          ),),
           // Expanded(child: ListView.builder(
           //     itemCount: _resultList.length,
           //     itemBuilder: (context, i){

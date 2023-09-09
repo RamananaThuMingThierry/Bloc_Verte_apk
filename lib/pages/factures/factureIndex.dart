@@ -21,10 +21,6 @@ class FacturesController extends StatefulWidget{
 
 class FacturesState extends State<FacturesController>{
   // Déclarations des variables
-
-  var connectionStatus;
-  late InternetConnectionChecker connectionChecker;
-
   List<Indexs> _allIndex = [];
   List<Indexs> _resultListIndex = [];
 
@@ -45,16 +41,6 @@ class FacturesState extends State<FacturesController>{
     fetchPortes();
     fetchIndex();
     fetchMois();
-    connectionChecker = InternetConnectionChecker();
-    connectionChecker.onStatusChange.listen((status) {
-      setState(() {
-        connectionStatus = status.toString();
-      });
-      if (connectionStatus ==
-          InternetConnectionStatus.disconnected.toString()) {
-        Message(context);
-      }
-    });
   }
 
   var position = 0;
@@ -139,212 +125,215 @@ class FacturesState extends State<FacturesController>{
         ],
       ),)
           :
-      StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('mois').snapshots(),
-        builder: (context, AsyncSnapshot snapshot){
-          if(snapshot.hasData){
-            if(snapshot.data.docs.length < 1){
-              return DonneesVide();
-            }
-            return ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: snapshot.data.docs.length,
-                itemBuilder: (context, i){
-                  String nomMois = snapshot.data.docs[i]['nom_mois'];
-                  double? ancien_index_mois = double.parse(snapshot.data.docs[i]['ancien_index']);
-                  double? nouvel_index_mois = double.parse(snapshot.data.docs[i]['nouvel_index']);
-                  double? consommer_mois = (nouvel_index_mois - ancien_index_mois) as double?;
-                  double? montant_mois = double.parse(snapshot.data.docs[i]['montant_mois']);
-                  double? montant_mois_fmg = montant_mois * 5;
-                  String date = snapshot.data.docs[i]['date_mois'];
-                  for(int i_mois = 0; i_mois < Listesmois.length; i_mois++){
-                    if(Listesmois[i_mois]["nom_mois"] == nomMois){
-                      double? sommeIndex = 0;
-                      for(int i_index = 0; i_index < Listesindexs.length; i_index++){
-                        if(Listesmois[i_mois]["nom_mois"] == Listesindexs[i_index]["mois_id"]){
-                          sommeIndex = sommeIndex! + (double.parse(Listesindexs[i_index]["nouvel_index"]) - (double.parse(Listesindexs[i_index]["ancien_index"])));
+      RefreshIndicator(
+        onRefresh: () => getIndexsStream(),
+        child: StreamBuilder(
+          stream: FirebaseFirestore.instance.collection('mois').snapshots(),
+          builder: (context, AsyncSnapshot snapshot){
+            if(snapshot.hasData){
+              if(snapshot.data.docs.length < 1){
+                return DonneesVide();
+              }
+              return ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: snapshot.data.docs.length,
+                  itemBuilder: (context, i){
+                    String nomMois = snapshot.data.docs[i]['nom_mois'];
+                    double? ancien_index_mois = double.parse(snapshot.data.docs[i]['ancien_index']);
+                    double? nouvel_index_mois = double.parse(snapshot.data.docs[i]['nouvel_index']);
+                    double? consommer_mois = (nouvel_index_mois - ancien_index_mois) as double?;
+                    double? montant_mois = double.parse(snapshot.data.docs[i]['montant_mois']);
+                    double? montant_mois_fmg = montant_mois * 5;
+                    String date = snapshot.data.docs[i]['date_mois'];
+                    for(int i_mois = 0; i_mois < Listesmois.length; i_mois++){
+                      if(Listesmois[i_mois]["nom_mois"] == nomMois){
+                        double? sommeIndex = 0;
+                        for(int i_index = 0; i_index < Listesindexs.length; i_index++){
+                          if(Listesmois[i_mois]["nom_mois"] == Listesindexs[i_index]["mois_id"]){
+                            sommeIndex = sommeIndex! + (double.parse(Listesindexs[i_index]["nouvel_index"]) - (double.parse(Listesindexs[i_index]["ancien_index"])));
+                          }
                         }
-                      }
 
 
-                      return Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-                        child: Container(
-                          width: 350,
-                          child: Card(
-                            elevation: 2.0,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Padding(padding: EdgeInsets.only(top: 20.0)),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text("${nomMois}", style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 20.0))
-                                  ],
-                                ),
-                                Ligne(color: Colors.blueGrey,),
-                                SizedBox(height: 5,),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                  children: [
-                                    Icon(Icons.calendar_month, color: Theme.of(context).primaryColorDark, size: 30.0,),
-                                    Text("${DateFormat.yMMMMEEEEd('fr').format(DateTime.parse(date))}", style: TextStyle(color: Theme.of(context).primaryColorDark, fontSize: 15.0))
-                                  ],
-                                ),
-                                SizedBox(height: 5,),
-                                Ligne(color: Colors.blueGrey,),
-                                SizedBox(height: 5,),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Column(
-                                      children: [
-                                        Text("Ancien Index", style: style.copyWith(color: Colors.green, fontSize: 15, fontWeight: FontWeight.bold),),
-                                        Text("${formatAmount(ancien_index_mois.toString())}", style: Theme.of(context).textTheme.headline5),
-                                      ],
-                                    ),
-                                    Column(
-                                      children: [
-                                        Text("Nouvel Index", style: style.copyWith(color: Colors.green, fontSize: 15, fontWeight: FontWeight.bold)),
-                                        Text("${formatAmount(nouvel_index_mois.toString())}", style: Theme.of(context).textTheme.headline5),
-                                      ],
-                                    ),
-                                    Column(
-                                      children: [
-                                        Text("Consommé", style: style.copyWith(color: Colors.green, fontSize: 15, fontWeight: FontWeight.bold)),
-                                        Text("${consommer_mois!.toStringAsFixed(2)}", style: Theme.of(context).textTheme.headline5),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: 5,),
-                                Ligne(color: Colors.blueGrey),
-                                SizedBox(height: 10,),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Column(
-                                      children: [
-                                        Text("Total consommer", style: style.copyWith(color: Colors.green, fontSize: 15, fontWeight: FontWeight.bold)),
-                                        //                Text("${somme_index}", style: style.copyWith(color: Colors.grey, fontSize: 15, fontWeight: FontWeight.bold))
-                                        Text("${sommeIndex!.toStringAsFixed(2)}" , style: Theme.of(context).textTheme.headline6),
-                                      ],
-                                    ),
-                                    Column(
-                                      children: [
-                                        Text("Reste compteur", style: style.copyWith(color: Colors.green, fontSize: 15, fontWeight: FontWeight.bold)),
-                                        //                Text("${somme_index}", style: style.copyWith(color: Colors.grey, fontSize: 15, fontWeight: FontWeight.bold))
-                                        Text("${(consommer_mois - sommeIndex).toStringAsFixed(2)}", style: Theme.of(context).textTheme.headline6),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                Ligne(color: Colors.grey),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Column(
-                                      children: [
-                                        Text("Payer compteur", style: style.copyWith(color: Colors.green, fontSize: 15, fontWeight: FontWeight.bold)),
-                                        Text("${ formatAmount(((montant_mois * (consommer_mois - sommeIndex)) / consommer_mois ).toStringAsFixed(2)) }", style: Theme.of(context).textTheme.headline6),
-                                      ],
-                                    )
-                                  ],
-                                ),
-                                SizedBox(height: 10,),
-                                Row(
-                                  children: [
-                                    Expanded(child: Divider(color: Colors.blueGrey,)),
-                                    SizedBox(width: 16),
-                                    Text("Détails des portes", style: Theme.of(context).textTheme.headline6),
-                                    SizedBox(width: 16,),
-                                    Expanded(child: Divider(color: Colors.blueGrey,)),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 300,
-                                  child: ListView.builder(
-                                      scrollDirection: Axis.vertical,
-                                      itemCount: _resultListIndex.length,
-                                      itemBuilder: (context, j){
-                                        Indexs index = _resultListIndex[j];
-                                        double? ancien = double.parse(index.ancien_index!);
-                                        double? news = double.parse(index.nouvel_index!);
-                                        double? consommerIndex = (news - ancien) as double?;
-                                        double? payer = (montant_mois * consommerIndex!) / consommer_mois;
-                                        String? valide = index.payer == true ? "Payer" : "Non payer";
-                                        if ((nomMois == index.mois_id)) {
-                                            return Container(
-                                              color: Colors.grey,
-                                              width: 350,
-                                              child: Column(
-                                                children: [
-                                                  for(int i = 0 ; i < Listesportes.length ; i++)
-                                                    if(Listesportes[i]["numero_porte"] == index.portes_id)
-                                                      ShowPortes(
-                                                          compteur: (((montant_mois * (consommer_mois - sommeIndex!)) / consommer_mois ) / Listesportes.length).toStringAsFixed(2), 
-                                                          payer: "${payer!.toStringAsFixed(2)}", 
-                                                          payer_ar: ( (((montant_mois * (consommer_mois - sommeIndex!)) / consommer_mois ) / Listesportes.length) + payer).toStringAsFixed(2),
-                                                          payer_fmg: (( (((montant_mois * (consommer_mois - sommeIndex!)) / consommer_mois ) / Listesportes.length) + payer) * 5).toStringAsFixed(2),
-                                                          nom: "${Listesportes[i]["nom"]}",
-                                                          porte: "${Listesportes[i]["numero_porte"]}",
-                                                          debut: "${ancien}", fin: "${news}", consommer: "${consommerIndex!.toStringAsFixed(2)}", 
-                                                          image: "${Listesportes[i]["image"]}",
-                                                          valide: "${valide}"
-                                                      ),
-                                                ],
-                                              ),
-                                            );
-                                        } else {
-                                          return Container(
-                                          );
-                                        }
-                                      }),
-                                ),
-                                Ligne(color: Colors.blueGrey),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 5),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        return Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                          child: Container(
+                            width: 350,
+                            child: Card(
+                              elevation: 2.0,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Padding(padding: EdgeInsets.only(top: 20.0)),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Text("Total en Ar", style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 15)),
-                                      Text("${formatAmount(montant_mois.toString())}", style: Theme.of(context).textTheme.headline5),
-                                      ]
-                                  ),
-                                ),
-                                SizedBox(height: 5,),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 5),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text("Total en Fmg", style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 15)),
-                                      Text("${formatAmount(montant_mois_fmg.toString())}", style: Theme.of(context).textTheme.headline5),
+                                      Text("${nomMois}", style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 20.0))
                                     ],
                                   ),
-                                )
-                              ],
+                                  Ligne(color: Colors.blueGrey,),
+                                  SizedBox(height: 5,),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Icon(Icons.calendar_month, color: Theme.of(context).primaryColorDark, size: 30.0,),
+                                      Text("${DateFormat.yMMMMEEEEd('fr').format(DateTime.parse(date))}", style: TextStyle(color: Theme.of(context).primaryColorDark, fontSize: 15.0))
+                                    ],
+                                  ),
+                                  SizedBox(height: 5,),
+                                  Ligne(color: Colors.blueGrey,),
+                                  SizedBox(height: 5,),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Column(
+                                        children: [
+                                          Text("Ancien Index", style: style.copyWith(color: Colors.green, fontSize: 15, fontWeight: FontWeight.bold),),
+                                          Text("${formatAmount(ancien_index_mois.toString())}", style: Theme.of(context).textTheme.headline5),
+                                        ],
+                                      ),
+                                      Column(
+                                        children: [
+                                          Text("Nouvel Index", style: style.copyWith(color: Colors.green, fontSize: 15, fontWeight: FontWeight.bold)),
+                                          Text("${formatAmount(nouvel_index_mois.toString())}", style: Theme.of(context).textTheme.headline5),
+                                        ],
+                                      ),
+                                      Column(
+                                        children: [
+                                          Text("Consommé", style: style.copyWith(color: Colors.green, fontSize: 15, fontWeight: FontWeight.bold)),
+                                          Text("${consommer_mois!.toStringAsFixed(2)}", style: Theme.of(context).textTheme.headline5),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 5,),
+                                  Ligne(color: Colors.blueGrey),
+                                  SizedBox(height: 10,),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Column(
+                                        children: [
+                                          Text("Total consommer", style: style.copyWith(color: Colors.green, fontSize: 15, fontWeight: FontWeight.bold)),
+                                          //                Text("${somme_index}", style: style.copyWith(color: Colors.grey, fontSize: 15, fontWeight: FontWeight.bold))
+                                          Text("${sommeIndex!.toStringAsFixed(2)}" , style: Theme.of(context).textTheme.headline6),
+                                        ],
+                                      ),
+                                      Column(
+                                        children: [
+                                          Text("Reste compteur", style: style.copyWith(color: Colors.green, fontSize: 15, fontWeight: FontWeight.bold)),
+                                          //                Text("${somme_index}", style: style.copyWith(color: Colors.grey, fontSize: 15, fontWeight: FontWeight.bold))
+                                          Text("${(consommer_mois - sommeIndex).toStringAsFixed(2)}", style: Theme.of(context).textTheme.headline6),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  Ligne(color: Colors.grey),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Column(
+                                        children: [
+                                          Text("Payer compteur", style: style.copyWith(color: Colors.green, fontSize: 15, fontWeight: FontWeight.bold)),
+                                          Text("${ formatAmount(((montant_mois * (consommer_mois - sommeIndex)) / consommer_mois ).toStringAsFixed(2)) }", style: Theme.of(context).textTheme.headline6),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                  SizedBox(height: 10,),
+                                  Row(
+                                    children: [
+                                      Expanded(child: Divider(color: Colors.blueGrey,)),
+                                      SizedBox(width: 16),
+                                      Text("Détails des portes", style: Theme.of(context).textTheme.headline6),
+                                      SizedBox(width: 16,),
+                                      Expanded(child: Divider(color: Colors.blueGrey,)),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 300,
+                                    child: ListView.builder(
+                                        scrollDirection: Axis.vertical,
+                                        itemCount: _resultListIndex.length,
+                                        itemBuilder: (context, j){
+                                          Indexs index = _resultListIndex[j];
+                                          double? ancien = double.parse(index.ancien_index!);
+                                          double? news = double.parse(index.nouvel_index!);
+                                          double? consommerIndex = (news - ancien) as double?;
+                                          double? payer = (montant_mois * consommerIndex!) / consommer_mois;
+                                          String? valide = index.payer == true ? "Payer" : "Non payer";
+                                          if ((nomMois == index.mois_id)) {
+                                              return Container(
+                                                color: Colors.grey,
+                                                width: 350,
+                                                child: Column(
+                                                  children: [
+                                                    for(int i = 0 ; i < Listesportes.length ; i++)
+                                                      if(Listesportes[i]["numero_porte"] == index.portes_id)
+                                                        ShowPortes(
+                                                            compteur: (((montant_mois * (consommer_mois - sommeIndex!)) / consommer_mois ) / Listesportes.length).toStringAsFixed(2),
+                                                            payer: "${payer!.toStringAsFixed(2)}",
+                                                            payer_ar: ( (((montant_mois * (consommer_mois - sommeIndex!)) / consommer_mois ) / Listesportes.length) + payer).toStringAsFixed(2),
+                                                            payer_fmg: (( (((montant_mois * (consommer_mois - sommeIndex!)) / consommer_mois ) / Listesportes.length) + payer) * 5).toStringAsFixed(2),
+                                                            nom: "${Listesportes[i]["nom"]}",
+                                                            porte: "${Listesportes[i]["numero_porte"]}",
+                                                            debut: "${ancien}", fin: "${news}", consommer: "${consommerIndex!.toStringAsFixed(2)}",
+                                                            image: "${Listesportes[i]["image"]}",
+                                                            valide: "${valide}"
+                                                        ),
+                                                  ],
+                                                ),
+                                              );
+                                          } else {
+                                            return Container(
+                                            );
+                                          }
+                                        }),
+                                  ),
+                                  Ligne(color: Colors.blueGrey),
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 5),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text("Total en Ar", style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 15)),
+                                        Text("${formatAmount(montant_mois.toString())}", style: Theme.of(context).textTheme.headline5),
+                                        ]
+                                    ),
+                                  ),
+                                  SizedBox(height: 5,),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text("Total en Fmg", style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 15)),
+                                        Text("${formatAmount(montant_mois_fmg.toString())}", style: Theme.of(context).textTheme.headline5),
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      );
+                        );
+                      }
                     }
-                  }
 
-                });
-          }
-          return Center(child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text("Veuillez patientez...", style: GoogleFonts.roboto(fontSize: 18, color: Colors.green),),
-              SpinKitThreeBounce(
-                color: Colors.green,
-                size: 30,
-              ),
-            ],
-          ),);
-        },
+                  });
+            }
+            return Center(child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Veuillez patientez...", style: GoogleFonts.roboto(fontSize: 18, color: Colors.green),),
+                SpinKitThreeBounce(
+                  color: Colors.green,
+                  size: 30,
+                ),
+              ],
+            ),);
+          },
+        ),
       ),
     );
   }

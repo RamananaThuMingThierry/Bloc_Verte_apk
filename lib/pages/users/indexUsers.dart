@@ -77,32 +77,16 @@ class _UtilisateursState extends State<Utilisateurs> {
     super.dispose();
   }
 
-  var connectionStatus;
-  late InternetConnectionChecker connectionChecker;
-
   @override
   void initState() {
     super.initState();
     getUsersStream();
     userConnecte = widget.userM;
     _searchController.addListener(_onSearchChanged);
-    connectionChecker = InternetConnectionChecker();
-    connectionChecker.onStatusChange.listen((status) {
-      setState(() {
-        connectionStatus = status.toString();
-      });
-      if (connectionStatus ==
-          InternetConnectionStatus.disconnected.toString()) {
-        Message(context);
-      }
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-
-    getUsersStream();
-
     return Scaffold(
         appBar: AppBar(
         title: Text("Utilisateurs"),
@@ -153,57 +137,60 @@ class _UtilisateursState extends State<Utilisateurs> {
             ),),
           )
               :
-          Expanded(child: ListView.builder(
-              itemCount: _resultList!.length,
-              itemBuilder: (context, i){
-                UserM user = _resultList![i];
-                pseudo = user.pseudo;
-                image = user.image;
-                roles = user.roles;
-                contact = user.contact;
-                email = user.email;
-                genre = user.genre;
-                return user == null ?
-                DonneesVide()
-                    : Padding(
-                  padding: EdgeInsets.only(left: 2.0, right: 2.0),
-                  child: InkWell(
-                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (ctx) => ShowUsers(user: user, useConnecte: userConnecte!,))),
-                    child: Card(
-                      shape:  Border(left: BorderSide(color: Colors.green, width: 5)),
-                      elevation: 3.0,
-                      child: ListTile(
-                        trailing: Icon(Icons.chevron_right, color:  Colors.green,),
-                        leading: (image == null)
-                            ?  CircleAvatar(
-                            foregroundColor: Colors.green, radius: 20.0,
-                            backgroundImage: Image.asset("assets/photo.png").image)
-                            :  CircleAvatar(
-                                foregroundColor: Colors.green, radius: 20.0,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(100),
-                                  child: CachedNetworkImage(
-                                    width: 250,
-                                    height: 250,
-                                    fit: BoxFit.cover,
-                                    imageUrl: image!,
-                                    placeholder: (context, url) => CircularProgressIndicator(), // Widget de chargement affiché pendant le chargement de l'image
-                                    errorWidget: (context, url, error) => Icon(Icons.error), // Widget d'erreur affiché si l'image ne peut pas être chargée
+          Expanded(child: RefreshIndicator(
+            onRefresh: () => getUsersStream(),
+            child: ListView.builder(
+                itemCount: _resultList!.length,
+                itemBuilder: (context, i){
+                  UserM user = _resultList![i];
+                  pseudo = user.pseudo;
+                  image = user.image;
+                  roles = user.roles;
+                  contact = user.contact;
+                  email = user.email;
+                  genre = user.genre;
+                  return user == null ?
+                  DonneesVide()
+                      : Padding(
+                    padding: EdgeInsets.only(left: 2.0, right: 2.0),
+                    child: InkWell(
+                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (ctx) => ShowUsers(user: user, useConnecte: userConnecte!,))),
+                      child: Card(
+                        shape:  Border(left: BorderSide(color: Colors.green, width: 5)),
+                        elevation: 3.0,
+                        child: ListTile(
+                          trailing: Icon(Icons.chevron_right, color:  Colors.green,),
+                          leading: (image == null)
+                              ?  CircleAvatar(
+                              foregroundColor: Colors.green, radius: 20.0,
+                              backgroundImage: Image.asset("assets/photo.png").image)
+                              :  CircleAvatar(
+                                  foregroundColor: Colors.green, radius: 20.0,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(100),
+                                    child: CachedNetworkImage(
+                                      width: 250,
+                                      height: 250,
+                                      fit: BoxFit.cover,
+                                      imageUrl: image!,
+                                      placeholder: (context, url) => CircularProgressIndicator(), // Widget de chargement affiché pendant le chargement de l'image
+                                      errorWidget: (context, url, error) => Icon(Icons.error), // Widget d'erreur affiché si l'image ne peut pas être chargée
+                                    ),
                                   ),
                                 ),
-                              ),
-                        //              backgroundImage: (portesPersonnes.image == null) ? Image.asset("assets/photo.png").image : Image.network(portesPersonnes!.image!).image),
-                        title: Text("${pseudo}", maxLines: 1, style: Theme.of(context).textTheme.headline5, overflow: TextOverflow.ellipsis,),
-                        subtitle: Container(
-                          margin: EdgeInsets.only(top: 4.0),
-                          child: Text("${email}", style: TextStyle(color: Colors.grey),overflow: TextOverflow.ellipsis,),
+                          //              backgroundImage: (portesPersonnes.image == null) ? Image.asset("assets/photo.png").image : Image.network(portesPersonnes!.image!).image),
+                          title: Text("${pseudo}", maxLines: 1, style: Theme.of(context).textTheme.headline5, overflow: TextOverflow.ellipsis,),
+                          subtitle: Container(
+                            margin: EdgeInsets.only(top: 4.0),
+                            child: Text("${email}", style: TextStyle(color: Colors.grey),overflow: TextOverflow.ellipsis,),
+                          ),
+                          //trailing: IconButton(icon: Icon(Icons.navigate_next_rounded),onPressed: () => print(portesPersonnes.nom_personne),),
                         ),
-                        //trailing: IconButton(icon: Icon(Icons.navigate_next_rounded),onPressed: () => print(portesPersonnes.nom_personne),),
                       ),
                     ),
-                  ),
-                );
-              }),),
+                  );
+                }),
+          ),),
         ],
       )
     );

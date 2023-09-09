@@ -31,9 +31,7 @@ class IndexState extends State<IndexController>{
 
   // Déclarations des variables
   UserM? utilisateurs;
-  var connectionStatus;
   String? roles;
-  late InternetConnectionChecker connectionChecker;
 
   List<Indexs> _allIndex = [];
   List<Indexs> _resultListIndex = [];
@@ -54,16 +52,6 @@ class IndexState extends State<IndexController>{
     getIndexsStream();
     utilisateurs = widget.userM;
     roles = utilisateurs!.roles!;
-    connectionChecker = InternetConnectionChecker();
-    connectionChecker.onStatusChange.listen((status) {
-      setState(() {
-        connectionStatus = status.toString();
-      });
-      if (connectionStatus ==
-          InternetConnectionStatus.disconnected.toString()) {
-        Message(context);
-      }
-    });
   }
 
   // Déclarations des variables
@@ -99,184 +87,187 @@ class IndexState extends State<IndexController>{
         ],
       ),)
         :
-      StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('mois').snapshots(),
-        builder: (context, AsyncSnapshot snapshot){
-          if(snapshot.hasData){
-            if(snapshot.data.docs.length < 1){
-              return DonneesVide();
-            }
-            return ListView.builder(
-                itemCount: snapshot.data.docs.length,
-                itemBuilder: (context, i){
-                  String nomMois = snapshot.data.docs[i]['nom_mois'];
-                  return Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 5),
-                    child: Card(
-                      color: Colors.blueGrey,
-                      elevation: 5.0,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Padding(padding: EdgeInsets.only(top: 20.0)),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text("${nomMois}", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20.0))
-                            ],
-                          ),
-                          Ligne(color: Colors.grey,),
-                          SizedBox(
-                            height: 250,
-                            child: ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                itemCount: _resultListIndex.length,
-                                itemBuilder: (context, j){
-                                  Indexs index = _resultListIndex[j];
-                                  String? key = _resultListIndex[j].id;
-                                  double? ancien = double.parse(index.ancien_index!);
-                                  double? news = double.parse(index.nouvel_index!);
-                                  double? consommer = (news - ancien) as double?;
-                                  return (nomMois == index.mois_id)
-                                      ? Container(
-                                    color: Colors.grey,
-                                    width: 350,
-                                    child: InkWell(
-                                      onLongPress: (){
-                                        roles == "Administrateurs"
-                                            ?
-                                        _modifierOuSupprimer(context, indexs: index)
-                                            :
-                                            showAlertDialog(context, "Info", "Vous n'êtes pas un administrateur! Vous n'avez pas eu accès!");
-                                      },
-                                      child: Card(
-                                        color: Colors.white,
-                                        elevation: 0,
-                                        shape: Border(),
-                                        child: Column(
-                                          children: [
-                                            Padding(padding: EdgeInsets.only(top: 20.0)),
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                RichText(text: TextSpan(
-                                                    children: [
-                                                      TextSpan(text: "Portes : ", style: TextStyle(color: Colors.blueGrey, fontWeight: FontWeight.bold)),
-                                                    ]
-                                                ),
-                                                ),
-                                                RichText(text: TextSpan(
-                                                    children: [
-                                                      WidgetSpan(child: Padding(padding: EdgeInsets.only(left:125.0),)),
-                                                      TextSpan(text: "${index.portes_id}", style: TextStyle(color: Colors.blueGrey, fontWeight: FontWeight.bold)),
-                                                    ]
-                                                ),
-                                                ),
-                                              ],
-                                            ),
-                                            Ligne(color: Colors.grey,),
-                                            Padding(padding: EdgeInsets.only(top: 20.0)),
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                RichText(text: TextSpan(
-                                                    children: [
-                                                      TextSpan(text: "Départ", style: TextStyle(color: Colors.blueGrey, fontWeight: FontWeight.bold)),
-                                                    ]
-                                                ),
-                                                ),
-                                                RichText(text: TextSpan(
-                                                    children: [
-                                                      WidgetSpan(child: Padding(padding: EdgeInsets.only(left:125.0),)),
-                                                      TextSpan(text: "Fin", style: TextStyle(color: Colors.blueGrey, fontWeight: FontWeight.bold)),
-                                                    ]
-                                                ),
-                                                ),
-                                              ],
-                                            ),
-                                            Padding(padding: EdgeInsets.only(top: 2.0)),
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                RichText(text: TextSpan(
-                                                    children: [
-                                                      WidgetSpan(child: Padding(padding: EdgeInsets.only(right: 5.0), child: Icon(Icons.note_alt_outlined, color: Colors.blueGrey,),)),
-                                                      TextSpan(text: "${index.ancien_index}", style: TextStyle(color: Colors.blueGrey)),
-                                                    ]
-                                                ),
-
-                                                ),
-                                                RichText(text: TextSpan(
-                                                    children: [
-                                                      WidgetSpan(child: Padding(padding: EdgeInsets.only(left:80.0, right: 5.0), child: Icon(Icons.note_alt, color: Colors.blueGrey,),)),
-                                                      TextSpan(text: "${index.nouvel_index}", style: TextStyle(color: Colors.blueGrey)),
-                                                    ]
-                                                ),
-
-                                                ),
-
-                                              ],
-                                            ),
-                                            Ligne(color: Colors.grey),
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                              children: [
-                                                Switch(
-                                                  value: index!.payer!,
-                                                  onChanged: (value) async {
-                                                    setState((){
-                                                      index!.payer = value;
-                                                    });
-                                                    bool updateIndex = await DbServices().updateIndexs(index);
-                                                    if(updateIndex == true){
-                                                      showAlertDialog(context, "Success","Mofication avec succès!");
-                                                    }else{
-                                                      showAlertDialog(context, "Warning","Erreur de sauvegarde!");
-                                                    }
-                                                  },
-                                                  activeColor: Colors.green,
-                                                  inactiveTrackColor: Colors.grey,
-                                                  activeTrackColor: Colors.blueGrey,
-                                                ),
-                                                Text("Payer : ${index!.payer == true ? "Oui" : "Non"}")
-                                              ],
-                                            ),
-                                            Ligne(color: Colors.grey,),
-                                            cardRow(name: "Consommer", value: "${consommer!.toStringAsFixed(2)}"),
-                                          ],
-                                        ),
-                                      ),
-                                    )
-                                  )
-                                      : Container(
-                                  );
-                                }),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 5),
-                            child: Row(
+      RefreshIndicator(
+        onRefresh: () => getIndexsStream(),
+        child: StreamBuilder(
+          stream: FirebaseFirestore.instance.collection('mois').snapshots(),
+          builder: (context, AsyncSnapshot snapshot){
+            if(snapshot.hasData){
+              if(snapshot.data.docs.length < 1){
+                return DonneesVide();
+              }
+              return ListView.builder(
+                  itemCount: snapshot.data.docs.length,
+                  itemBuilder: (context, i){
+                    String nomMois = snapshot.data.docs[i]['nom_mois'];
+                    return Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 5),
+                      child: Card(
+                        color: Colors.blueGrey,
+                        elevation: 5.0,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Padding(padding: EdgeInsets.only(top: 20.0)),
+                            Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
+                                Text("${nomMois}", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20.0))
                               ],
                             ),
-                          ),
-                        ],
+                            Ligne(color: Colors.grey,),
+                            SizedBox(
+                              height: 250,
+                              child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: _resultListIndex.length,
+                                  itemBuilder: (context, j){
+                                    Indexs index = _resultListIndex[j];
+                                    String? key = _resultListIndex[j].id;
+                                    double? ancien = double.parse(index.ancien_index!);
+                                    double? news = double.parse(index.nouvel_index!);
+                                    double? consommer = (news - ancien) as double?;
+                                    return (nomMois == index.mois_id)
+                                        ? Container(
+                                      color: Colors.grey,
+                                      width: 350,
+                                      child: InkWell(
+                                        onLongPress: (){
+                                          roles == "Administrateurs"
+                                              ?
+                                          _modifierOuSupprimer(context, indexs: index)
+                                              :
+                                              showAlertDialog(context, "Info", "Vous n'êtes pas un administrateur! Vous n'avez pas eu accès!");
+                                        },
+                                        child: Card(
+                                          color: Colors.white,
+                                          elevation: 0,
+                                          shape: Border(),
+                                          child: Column(
+                                            children: [
+                                              Padding(padding: EdgeInsets.only(top: 20.0)),
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  RichText(text: TextSpan(
+                                                      children: [
+                                                        TextSpan(text: "Portes : ", style: TextStyle(color: Colors.blueGrey, fontWeight: FontWeight.bold)),
+                                                      ]
+                                                  ),
+                                                  ),
+                                                  RichText(text: TextSpan(
+                                                      children: [
+                                                        WidgetSpan(child: Padding(padding: EdgeInsets.only(left:125.0),)),
+                                                        TextSpan(text: "${index.portes_id}", style: TextStyle(color: Colors.blueGrey, fontWeight: FontWeight.bold)),
+                                                      ]
+                                                  ),
+                                                  ),
+                                                ],
+                                              ),
+                                              Ligne(color: Colors.grey,),
+                                              Padding(padding: EdgeInsets.only(top: 20.0)),
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  RichText(text: TextSpan(
+                                                      children: [
+                                                        TextSpan(text: "Départ", style: TextStyle(color: Colors.blueGrey, fontWeight: FontWeight.bold)),
+                                                      ]
+                                                  ),
+                                                  ),
+                                                  RichText(text: TextSpan(
+                                                      children: [
+                                                        WidgetSpan(child: Padding(padding: EdgeInsets.only(left:125.0),)),
+                                                        TextSpan(text: "Fin", style: TextStyle(color: Colors.blueGrey, fontWeight: FontWeight.bold)),
+                                                      ]
+                                                  ),
+                                                  ),
+                                                ],
+                                              ),
+                                              Padding(padding: EdgeInsets.only(top: 2.0)),
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  RichText(text: TextSpan(
+                                                      children: [
+                                                        WidgetSpan(child: Padding(padding: EdgeInsets.only(right: 5.0), child: Icon(Icons.note_alt_outlined, color: Colors.blueGrey,),)),
+                                                        TextSpan(text: "${index.ancien_index}", style: TextStyle(color: Colors.blueGrey)),
+                                                      ]
+                                                  ),
+
+                                                  ),
+                                                  RichText(text: TextSpan(
+                                                      children: [
+                                                        WidgetSpan(child: Padding(padding: EdgeInsets.only(left:80.0, right: 5.0), child: Icon(Icons.note_alt, color: Colors.blueGrey,),)),
+                                                        TextSpan(text: "${index.nouvel_index}", style: TextStyle(color: Colors.blueGrey)),
+                                                      ]
+                                                  ),
+
+                                                  ),
+
+                                                ],
+                                              ),
+                                              Ligne(color: Colors.grey),
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                                children: [
+                                                  Switch(
+                                                    value: index!.payer!,
+                                                    onChanged: (value) async {
+                                                      setState((){
+                                                        index!.payer = value;
+                                                      });
+                                                      bool updateIndex = await DbServices().updateIndexs(index);
+                                                      if(updateIndex == true){
+                                                        showAlertDialog(context, "Success","Mofication avec succès!");
+                                                      }else{
+                                                        showAlertDialog(context, "Warning","Erreur de sauvegarde!");
+                                                      }
+                                                    },
+                                                    activeColor: Colors.green,
+                                                    inactiveTrackColor: Colors.grey,
+                                                    activeTrackColor: Colors.blueGrey,
+                                                  ),
+                                                  Text("Payer : ${index!.payer == true ? "Oui" : "Non"}")
+                                                ],
+                                              ),
+                                              Ligne(color: Colors.grey,),
+                                              cardRow(name: "Consommer", value: "${consommer!.toStringAsFixed(2)}"),
+                                            ],
+                                          ),
+                                        ),
+                                      )
+                                    )
+                                        : Container(
+                                    );
+                                  }),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 5),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                });
-          }
-          return Center(child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text("Veuillez patientez...", style: GoogleFonts.roboto(fontSize: 18, color: Colors.green),),
-              SpinKitThreeBounce(
-                color: Colors.green,
-                size: 30,
-              ),
-            ],
-          ),);
-        },
+                    );
+                  });
+            }
+            return Center(child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Veuillez patientez...", style: GoogleFonts.roboto(fontSize: 18, color: Colors.green),),
+                SpinKitThreeBounce(
+                  color: Colors.green,
+                  size: 30,
+                ),
+              ],
+            ),);
+          },
+        ),
       ),
     );
   }

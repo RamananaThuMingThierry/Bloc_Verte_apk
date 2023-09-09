@@ -34,8 +34,6 @@ class MoisController extends StatefulWidget{
 class MoisState extends State<MoisController>{
 
   UserM? utilisateurs;
-  var connectionStatus;
-  late InternetConnectionChecker connectionChecker;
   // Déclarations des variables
   String? nom_mois, nouvel_index, ancien_index, montant_mois, date_mois, roles;
   /* -- début du teste --*/
@@ -60,16 +58,6 @@ class MoisState extends State<MoisController>{
     getMoisStream();
     utilisateurs = widget.userM;
     roles = utilisateurs!.roles!;
-    connectionChecker = InternetConnectionChecker();
-    connectionChecker.onStatusChange.listen((status) {
-      setState(() {
-        connectionStatus = status.toString();
-      });
-      if (connectionStatus ==
-          InternetConnectionStatus.disconnected.toString()) {
-        Message(context);
-      }
-    });
   }
 
   @override
@@ -98,134 +86,137 @@ class MoisState extends State<MoisController>{
                 ),
               ],
             ),)
-          : ListView.builder(
-          itemCount: _resultListMois.length,
-          itemBuilder: (context , i){
-            Mois mois = _resultListMois[i];
-            return mois == null
-            ? DonneesVide()
-            : Padding(
-              padding: EdgeInsets.symmetric(horizontal: 5),
-              child: InkWell(
-                onLongPress: (){
-                  roles == "Administrateurs" ?
-                  _modifierOuSupprimer(context, mois: mois)
-                      :
-                      showAlertDialog(context, "Info", "Vous n'êtes pas un Administrateur! Vous n'avez pas eu accès!");
-                },
-                child: Card(
-                  elevation: 5.0,
-                  shape: Border(),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Padding(padding: EdgeInsets.only(top: 20.0)),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text("${mois.nom_mois}", style: Theme.of(context).textTheme.headline5)
-                        ],
-                      ),
-                      Ligne(color: Colors.grey,),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          : RefreshIndicator(
+            onRefresh: () => getMoisStream(),
+            child: ListView.builder(
+            itemCount: _resultListMois.length,
+            itemBuilder: (context , i){
+              Mois mois = _resultListMois[i];
+              return mois == null
+              ? DonneesVide()
+              : Padding(
+                padding: EdgeInsets.symmetric(horizontal: 5),
+                child: InkWell(
+                  onLongPress: (){
+                    roles == "Administrateurs" ?
+                    _modifierOuSupprimer(context, mois: mois)
+                        :
+                        showAlertDialog(context, "Info", "Vous n'êtes pas un Administrateur! Vous n'avez pas eu accès!");
+                  },
+                  child: Card(
+                    elevation: 5.0,
+                    shape: Border(),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Padding(padding: EdgeInsets.only(top: 20.0)),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.calendar_month, color: Colors.lightBlue,),
-                            Text("${DateFormat.yMMMMEEEEd('fr').format(DateTime.parse(mois!.date_mois!))}", style: TextStyle(color: Colors.lightBlue))
+                            Text("${mois.nom_mois}", style: Theme.of(context).textTheme.headline5)
                           ],
                         ),
-                      ),
-                      Ligne(color: Colors.grey,),
-                      Padding(padding: EdgeInsets.only(top: 20.0)),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          RichText(text: TextSpan(
-                              children: [
-                                TextSpan(text: "Départ", style: TextStyle(color: Colors.blueGrey, fontWeight: FontWeight.bold)),
-                              ]
+                        Ligne(color: Colors.grey,),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Icon(Icons.calendar_month, color: Colors.lightBlue,),
+                              Text("${DateFormat.yMMMMEEEEd('fr').format(DateTime.parse(mois!.date_mois!))}", style: TextStyle(color: Colors.lightBlue))
+                            ],
                           ),
-                          ),
-                          RichText(text: TextSpan(
-                              children: [
-                                WidgetSpan(child: Padding(padding: EdgeInsets.only(left:125.0),)),
-                                TextSpan(text: "Fin", style: TextStyle(color: Colors.blueGrey, fontWeight: FontWeight.bold)),
-                              ]
-                          ),
-                          ),
-                        ],
-                      ),
-                      Padding(padding: EdgeInsets.only(top: 5.0)),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          RichText(text: TextSpan(
-                              children: [
-                                WidgetSpan(child: Padding(padding: EdgeInsets.only(right: 5.0), child: Icon(Icons.note_alt_outlined, color: Colors.grey,),)),
-                                TextSpan(text: "${formatAmount(double.parse(mois.ancien_index!).toString())}", style: Theme.of(context).textTheme.headline5),
-                              ]
-                          ),
-
-                          ),
-                          RichText(text: TextSpan(
-                              children: [
-                                WidgetSpan(child: Padding(padding: EdgeInsets.only(left:80.0, right: 5.0), child: Icon(Icons.note_alt, color: Colors.grey,),)),
-                                TextSpan(text: "${formatAmount(double.parse(mois.nouvel_index!).toString())}", style: Theme.of(context).textTheme.headline5),
-                              ]
-                          ),
-
-                          ),
-
-                        ],
-                      ),
-                      Padding(padding: EdgeInsets.only(top: 20.0)),
-                      Ligne(color: Colors.grey,),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 5),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        ),
+                        Ligne(color: Colors.grey,),
+                        Padding(padding: EdgeInsets.only(top: 20.0)),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Switch(
-                              value: mois.payer!,
-                              onChanged: (v) async {
-                                setState((){
-                                  mois!.payer = v;
-                                });
-                                bool updateMois = await DbServices().updateMois(mois);
-                                if(updateMois == true){
-                                  showAlertDialog(context, "Success", "Mofication avec succès!");
-                                }else{
-                                  showAlertDialog(context, "Warning", "Erreur de sauvegarde!");
-                                }
-                              },
-                              activeColor: Colors.green,
-                              inactiveTrackColor: Colors.grey,
-                              activeTrackColor: Colors.blueGrey,
+                            RichText(text: TextSpan(
+                                children: [
+                                  TextSpan(text: "Départ", style: TextStyle(color: Colors.blueGrey, fontWeight: FontWeight.bold)),
+                                ]
                             ),
-                            Text("Status : ${mois!.payer == true ? "Payer" : "Non payer"}"),
+                            ),
+                            RichText(text: TextSpan(
+                                children: [
+                                  WidgetSpan(child: Padding(padding: EdgeInsets.only(left:125.0),)),
+                                  TextSpan(text: "Fin", style: TextStyle(color: Colors.blueGrey, fontWeight: FontWeight.bold)),
+                                ]
+                            ),
+                            ),
                           ],
                         ),
-                      ),
-                      Ligne(color: Colors.grey,),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 20),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        Padding(padding: EdgeInsets.only(top: 5.0)),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.payments_outlined, color: Colors.green,),
-                            Text("${formatAmount(mois.montant_mois!) ?? "0"} Ar", style: Theme.of(context).textTheme.headline5),
+                            RichText(text: TextSpan(
+                                children: [
+                                  WidgetSpan(child: Padding(padding: EdgeInsets.only(right: 5.0), child: Icon(Icons.note_alt_outlined, color: Colors.grey,),)),
+                                  TextSpan(text: "${formatAmount(double.parse(mois.ancien_index!).toString())}", style: Theme.of(context).textTheme.headline5),
+                                ]
+                            ),
+
+                            ),
+                            RichText(text: TextSpan(
+                                children: [
+                                  WidgetSpan(child: Padding(padding: EdgeInsets.only(left:80.0, right: 5.0), child: Icon(Icons.note_alt, color: Colors.grey,),)),
+                                  TextSpan(text: "${formatAmount(double.parse(mois.nouvel_index!).toString())}", style: Theme.of(context).textTheme.headline5),
+                                ]
+                            ),
+
+                            ),
+
                           ],
                         ),
-                      ),
-                      Padding(padding: EdgeInsets.only(top: 20.0)),
-                    ],
+                        Padding(padding: EdgeInsets.only(top: 20.0)),
+                        Ligne(color: Colors.grey,),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 5),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Switch(
+                                value: mois.payer!,
+                                onChanged: (v) async {
+                                  setState((){
+                                    mois!.payer = v;
+                                  });
+                                  bool updateMois = await DbServices().updateMois(mois);
+                                  if(updateMois == true){
+                                    showAlertDialog(context, "Success", "Mofication avec succès!");
+                                  }else{
+                                    showAlertDialog(context, "Warning", "Erreur de sauvegarde!");
+                                  }
+                                },
+                                activeColor: Colors.green,
+                                inactiveTrackColor: Colors.grey,
+                                activeTrackColor: Colors.blueGrey,
+                              ),
+                              Text("Status : ${mois!.payer == true ? "Payer" : "Non payer"}"),
+                            ],
+                          ),
+                        ),
+                        Ligne(color: Colors.grey,),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Icon(Icons.payments_outlined, color: Colors.green,),
+                              Text("${formatAmount(mois.montant_mois!) ?? "0"} Ar", style: Theme.of(context).textTheme.headline5),
+                            ],
+                          ),
+                        ),
+                        Padding(padding: EdgeInsets.only(top: 20.0)),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            );
-          }),
+              );
+            }),
+          ),
     );
   }
 

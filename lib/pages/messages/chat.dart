@@ -19,33 +19,12 @@ class Chat extends StatefulWidget {
 }
 
 class _ChatState extends State<Chat> {
-  var connectionStatus;
-  late InternetConnectionChecker connectionChecker;
-
-  @override
-  void initState() {
-    super.initState();
-  //  timeago.setLocaleMessages('fr', timeago.FrMessages());
-    connectionChecker = InternetConnectionChecker();
-    connectionChecker.onStatusChange.listen((status) {
-      setState(() {
-        connectionStatus = status.toString();
-      });
-      if (connectionStatus ==
-          InternetConnectionStatus.disconnected.toString()) {
-        Message(context);
-      }
-    });
-  }
-
-
-  @override
+ @override
   Widget build(BuildContext context) {
 
     final List<Chats> chats = Provider.of<List<Chats>>(context);
 
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text("Messages"),
         backgroundColor: Colors.green,
