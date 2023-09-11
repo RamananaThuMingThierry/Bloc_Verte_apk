@@ -55,6 +55,7 @@ dependencies:
   google_fonts: ^4.0.4
   timeago: ^3.5.0
   image_cropper: ^4.0.1
+  shimmer: ^3.0.0
 # flutter_image_compress: ^2.0.4
 # intl_phone_field: ^3.2.0
 #  adaptive_theme: ^3.2.1

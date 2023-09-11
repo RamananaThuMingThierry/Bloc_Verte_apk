@@ -6,6 +6,7 @@ import 'package:bv/model/User.dart';
 import 'package:bv/pages/mois/ajouterMois.dart';
 import 'package:bv/pages/mois/modifierMois.dart';
 import 'package:bv/services/db.dart';
+import 'package:bv/shimmer/loadingCard.dart';
 import 'package:bv/utils/constant.dart';
 import 'package:bv/utils/functions.dart';
 import 'package:bv/utils/loading.dart';
@@ -76,16 +77,7 @@ class MoisState extends State<MoisController>{
       ),
       body: _resultListMois.length == 0
           ?
-            Center(child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text("Veuillez patientez...", style: GoogleFonts.roboto(fontSize: 18, color: Colors.green),),
-                SpinKitThreeBounce(
-                  color: Colors.green,
-                  size: 30,
-                ),
-              ],
-            ),)
+            LoadingCard()
           : RefreshIndicator(
             onRefresh: () => getMoisStream(),
             child: ListView.builder(

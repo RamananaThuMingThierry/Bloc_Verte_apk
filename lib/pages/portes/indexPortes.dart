@@ -2,8 +2,10 @@ import 'dart:io';
 import 'package:bv/model/Portes.dart';
 import 'package:bv/model/User.dart';
 import 'package:bv/pages/portes/ajouterPortes.dart';
+import 'package:bv/shimmer/loadingPortes.dart';
 import 'package:bv/pages/portes/modifierPortes.dart';
 import 'package:bv/services/db.dart';
+import 'package:bv/shimmer/shimmerWidget.dart';
 import 'package:bv/utils/loading.dart';
 import 'package:bv/widgets/button.dart';
 import 'package:bv/widgets/donnees_vide.dart';
@@ -140,18 +142,7 @@ class PortesState extends State<PortesController>{
           ),
           _resultList.length == 0
               ?
-          Expanded(
-            child: Center(child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text("Veuillez patientez...", style: GoogleFonts.roboto(fontSize: 18, color: Colors.green),),
-                SpinKitThreeBounce(
-                  color: Colors.green,
-                  size: 30,
-                ),
-              ],
-            ),),
-          )
+          Expanded(child: Patientez())
               :
           Expanded(child:  RefreshIndicator(
             onRefresh: () => getPortesStream(),

@@ -4,6 +4,7 @@ import 'package:bv/class/Facture.dart';
 import 'package:bv/model/Chat.dart';
 import 'package:bv/model/User.dart';
 import 'package:bv/pages/factures/factureIndex.dart';
+import 'package:bv/pages/homePageLoading.dart';
 import 'package:bv/pages/index/indexIndex.dart';
 import 'package:bv/pages/loyer/loyerIndex.dart';
 import 'package:bv/pages/messages/chat.dart';
@@ -99,7 +100,8 @@ class _HomePageState extends State<HomePage> {
           IconButton(onPressed: (){}, icon: Icon(Icons.notifications_none, color: Colors.white,)),
         ],
       ),
-      drawer: userm == null ? SizedBox():
+
+      drawer: userm == null ? null :
         ClipPath(
         clipBehavior: Clip.antiAliasWithSaveLayer,
         clipper: OvalRightBorderClipper(),
@@ -163,20 +165,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-      body:   (userm == null) ? Container(
-        color: Colors.white,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text("Veuillez patientez", style: GoogleFonts.roboto(fontSize: 17, color: Colors.green),),
-            SizedBox(height: 10,),
-            SpinKitCircle(
-              color: Colors.green,
-              size: 50,
-            ),
-          ],
-        ),
-      ) : Center(
+      body:   (userm == null) ? HomePageLoading() : Center(
         child: GridView.builder(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
             itemCount: factures.length,

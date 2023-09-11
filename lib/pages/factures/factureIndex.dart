@@ -1,4 +1,5 @@
 import 'package:bv/model/Index.dart';
+import 'package:bv/shimmer/loadingFactures.dart';
 import 'package:bv/utils/constant.dart';
 import 'package:bv/utils/functions.dart';
 import 'package:bv/utils/loading.dart';
@@ -114,16 +115,7 @@ class FacturesState extends State<FacturesController>{
       ),
       body: _resultListIndex.length == 0
           ?
-      Center(child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text("Veuillez patientez...", style: GoogleFonts.roboto(fontSize: 18, color: Colors.green),),
-          SpinKitThreeBounce(
-            color: Colors.green,
-            size: 30,
-          ),
-        ],
-      ),)
+      LoadingFactures()
           :
       RefreshIndicator(
         onRefresh: () => getIndexsStream(),
@@ -322,16 +314,7 @@ class FacturesState extends State<FacturesController>{
 
                   });
             }
-            return Center(child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text("Veuillez patientez...", style: GoogleFonts.roboto(fontSize: 18, color: Colors.green),),
-                SpinKitThreeBounce(
-                  color: Colors.green,
-                  size: 30,
-                ),
-              ],
-            ),);
+            return LoadingFactures();
           },
         ),
       ),

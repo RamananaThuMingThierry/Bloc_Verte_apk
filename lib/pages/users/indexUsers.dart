@@ -1,4 +1,5 @@
 import 'package:bv/model/User.dart';
+import 'package:bv/shimmer/loadingPortes.dart';
 import 'package:bv/pages/users/showUsers.dart';
 import 'package:bv/utils/loading.dart';
 import 'package:bv/widgets/donnees_vide.dart';
@@ -124,18 +125,7 @@ class _UtilisateursState extends State<Utilisateurs> {
           ),
           _resultList.length == 0
               ?
-          Expanded(
-            child: Center(child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text("Veuillez patientez...", style: GoogleFonts.roboto(fontSize: 18, color: Colors.green),),
-                SpinKitThreeBounce(
-                  color: Colors.green,
-                  size: 30,
-                ),
-              ],
-            ),),
-          )
+          Expanded(child: Patientez())
               :
           Expanded(child: RefreshIndicator(
             onRefresh: () => getUsersStream(),

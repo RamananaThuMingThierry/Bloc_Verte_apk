@@ -4,6 +4,7 @@ import 'package:bv/model/User.dart';
 import 'package:bv/pages/index/ajouterIndex.dart';
 import 'package:bv/pages/index/modifierIndex.dart';
 import 'package:bv/services/db.dart';
+import 'package:bv/shimmer/loadingCard.dart';
 import 'package:bv/utils/constant.dart';
 import 'package:bv/utils/loading.dart';
 import 'package:bv/widgets/donnees_vide.dart';
@@ -76,16 +77,7 @@ class IndexState extends State<IndexController>{
       ),
       body: _resultListIndex.length == 0
         ?
-      Center(child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text("Veuillez patientez...", style: GoogleFonts.roboto(fontSize: 18, color: Colors.green),),
-          SpinKitThreeBounce(
-            color: Colors.green,
-            size: 30,
-          ),
-        ],
-      ),)
+      LoadingCard()
         :
       RefreshIndicator(
         onRefresh: () => getIndexsStream(),
@@ -256,16 +248,7 @@ class IndexState extends State<IndexController>{
                     );
                   });
             }
-            return Center(child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text("Veuillez patientez...", style: GoogleFonts.roboto(fontSize: 18, color: Colors.green),),
-                SpinKitThreeBounce(
-                  color: Colors.green,
-                  size: 30,
-                ),
-              ],
-            ),);
+            return LoadingCard();
           },
         ),
       ),
