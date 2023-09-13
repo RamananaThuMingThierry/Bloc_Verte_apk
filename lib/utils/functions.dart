@@ -204,22 +204,22 @@ void onLoading(BuildContext context){
       });
 }
 
-String formatAmount(String price){
-  String priceText = "";
+String formatAmount(String leo){
+  String leonardoText = "";
   int counter = 0;
-  for(int i = (price.split(".")[0].length - 1); i >= 0 ; i--){
+  for(int i = (leo.split(".")[0].length - 1); i >= 0 ; i--){
     counter++;
-    String str = price[i];
+    String str = leo[i];
     if((counter % 3 ) != 0 && i != 0){
-      priceText = "$str$priceText";
+      leonardoText = "$str$leonardoText";
     }else if(i == 0){
-      priceText = "$str$priceText";
+      leonardoText = "$str$leonardoText";
     }else{
-      priceText = " $str$priceText";
+      leonardoText = " $str$leonardoText";
     }
   }
-  priceText = priceText +"." +price.split(".")[1];
-  return priceText.trim();
+  leonardoText = leonardoText +"." +leo.split(".")[1];
+  return leonardoText.trim();
 }
 
 Padding TextTitre({String? name}){

@@ -17,7 +17,7 @@ class LoadingFactures extends StatelessWidget {
                 shape: Border(),
                 child: Container(
                   height: MediaQuery.of(context).size.height,
-                  width: MediaQuery.of(context).size.width,
+                  width: 340,
                 ),
               ),
             );

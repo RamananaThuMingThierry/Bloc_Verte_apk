@@ -56,6 +56,12 @@ dependencies:
   timeago: ^3.5.0
   image_cropper: ^4.0.1
   shimmer: ^3.0.0
+  pdf: ^3.10.4
+  open_file: ^3.3.2
+  share_plus: ^6.0.1
+  flutter_lints: ^2.0.3
+  path_provider: ^2.1.1
+  pdf_viewer_v2: ^1.0.1
 # flutter_image_compress: ^2.0.4
 # intl_phone_field: ^3.2.0
 #  adaptive_theme: ^3.2.1
@@ -63,6 +69,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+#  open_file: ^4.2.1
+#  share_plus: ^3.0.3
 
 flutter_icons:
   android: true
@@ -94,6 +102,7 @@ flutter:
     - assets/b1.jpg
     - assets/b2.png
     - assets/fond.png
+    - assets/OpenSans-Regular.ttf
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
